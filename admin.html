@@ -333,9 +333,10 @@ function renderTournaments() {
 
   list.innerHTML = sorted.map(t => {
     const peserta = Array.isArray(t.Peserta) ? t.Peserta : [];
-    const chips   = peserta.map(p =>
-      `<div class="chip"><b>${escHtml(p.nama)}</b> · HCP ${p.hcp}</div>`
-    ).join('');
+    const chips = peserta.map(p => {
+      const icon = (p.gelar || '') === 'Mrs.' ? '👩' : '👨';
+      return `<div class="chip">${icon} <b>${escHtml(p.gelar || '')} ${escHtml(p.nama)}</b> · HCP ${p.hcp}</div>`;
+    }).join('');
 
     return `
     <div class="trn-card">
@@ -376,17 +377,24 @@ function renderAnggota() {
     return;
   }
 
-  // Sort by name
-  const sorted = [...anggota].sort((a,b) => a.Nama.localeCompare(b.Nama));
+  // Sort by gelar dulu (Mr. sebelum Mrs.), lalu nama
+  const sorted = [...anggota].sort((a,b) => {
+    const ga = (a['Gelar'] || '').trim();
+    const gb = (b['Gelar'] || '').trim();
+    if (ga !== gb) return ga.localeCompare(gb);
+    return a.Nama.localeCompare(b.Nama);
+  });
 
   list.innerHTML = sorted.map((a, i) => {
     const hcp    = (a.Handicap !== undefined && a.Handicap !== '') ? a.Handicap : '-';
     const rounds = a.TotalRounds || 0;
     const ou     = a['Operating Unit'] || a.OU || '';
+    const gelar  = (a['Gelar'] || '').trim();
+    const icon   = gelar === 'Mrs.' ? '👩' : '👨';
     return `
     <div class="anggota-card">
       <div class="anggota-info">
-        <div class="a-name">${i+1}. ${escHtml(a.Nama)}</div>
+        <div class="a-name">${icon} <span style="color:var(--text2);font-size:12px;">${escHtml(gelar)}</span> ${escHtml(a.Nama)}</div>
         <div class="a-meta">
           ${ou ? '🏢 ' + escHtml(ou) + ' · ' : ''}
           🎯 ${rounds} round dimainkan
