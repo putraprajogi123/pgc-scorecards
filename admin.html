@@ -624,12 +624,15 @@ function fmtDate(d) {
       return `${date.getDate()} ${m[date.getMonth()]} ${date.getFullYear()}`;
     }
   }
-  // Handle string
-  const s = d.toString().split('T')[0];
-  const p = s.split('-');
-  if (p.length !== 3) return s;
   const m = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  return `${p[2]} ${m[parseInt(p[1])-1]} ${p[0]}`;
+  // Ambil bagian tanggal saja dari string apapun — hindari timezone shift
+  const str = d.toString();
+  // Format: 2026-05-17T... atau 2026-05-17
+  const match = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    return `${parseInt(match[3])} ${m[parseInt(match[2])-1]} ${match[1]}`;
+  }
+  return str;
 }
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
