@@ -279,11 +279,17 @@ function switchScTab(name) {
   // Scorecard tab = semua screen scorecard flow
   if (name === 'input') {
     document.getElementById('screen-record').style.display = 'none';
-    // Tampilkan screen terakhir yang aktif di flow scorecard
-    const active = ['setup','scorecard','summary','success'].find(s =>
-      document.getElementById('screen-' + s)?.classList.contains('active')
-    ) || 'setup';
-    showScreen(active);
+    // Tampilkan setup screen — reset display semua dulu
+    ['setup','scorecard','summary','success'].forEach(s => {
+      const el = document.getElementById('screen-' + s);
+      if (el) el.style.display = 'none';
+    });
+    // Tampilkan setup
+    const setupEl = document.getElementById('screen-setup');
+    if (setupEl) {
+      setupEl.style.display = 'block';
+      setupEl.classList.add('active');
+    }
   } else {
     // Sembunyikan semua screen scorecard
     ['setup','scorecard','summary','success'].forEach(s => {
