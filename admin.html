@@ -615,9 +615,21 @@ function todayStr() {
   return new Date().toISOString().split('T')[0];
 }
 function fmtDate(d) {
-  if (!d) return '';
-  const dt = new Date(d + 'T00:00:00');
-  return dt.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+  if (!d || d === 0 || d === '') return '-';
+  // Handle Excel serial number
+  if (typeof d === 'number') {
+    const date = new Date(Math.round((d - 25569) * 86400 * 1000));
+    if (!isNaN(date.getTime())) {
+      const m = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      return `${date.getDate()} ${m[date.getMonth()]} ${date.getFullYear()}`;
+    }
+  }
+  // Handle string
+  const s = d.toString().split('T')[0];
+  const p = s.split('-');
+  if (p.length !== 3) return s;
+  const m = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return `${p[2]} ${m[parseInt(p[1])-1]} ${p[0]}`;
 }
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
