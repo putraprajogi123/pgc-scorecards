@@ -271,7 +271,8 @@ body::before{
   <div class="hdr-right">
     <div class="hdr-tournament" id="trnName">—</div>
     <div class="hdr-meta" id="trnMeta">—</div>
-    <div class="live-badge"><span class="live-dot"></span> LIVE</div>
+    <div id="liveBadge" class="live-badge"><span class="live-dot"></span> LIVE</div>
+    <div id="finalBadge" style="display:none;background:rgba(245,166,35,.15);border:1px solid var(--gold);color:var(--gold);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:2px;margin-top:4px;">🏆 FINAL RESULT</div>
   </div>
 </div>
 
@@ -310,6 +311,12 @@ body::before{
 </div>
 
 <div class="last-update" id="lastUpdate"></div>
+<div style="text-align:center;padding:6px;">
+  <button id="btnPrintScore" onclick="printTournamentScore()"
+    style="display:none;background:var(--gold);color:#0d1821;border:none;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;">
+    📄 Print Score
+  </button>
+</div>
 
 <div class="footer">
   PERLABIAN GOLF CLUB · PGC SCORECARDS 2026 · AUTO-REFRESH 30 DETIK
@@ -339,8 +346,9 @@ window.onload = async () => {
   await loadData();
   document.getElementById('loading').style.display = 'none';
 
-  // Auto refresh setiap 30 detik
+  // Auto refresh setiap 30 detik — hanya untuk tournament AKTIF
   setInterval(() => {
+    if (isFinished) return; // Stop refresh untuk tournament SELESAI
     resetRefreshBar();
     loadData();
   }, 30000);
@@ -409,6 +417,8 @@ async function loadData() {
   }
 }
 
+let isFinished = false;
+
 function updateHeader() {
   if (tournamentData) {
     document.getElementById('trnName').textContent = tournamentData.Nama || 'PGC Tournament';
@@ -418,6 +428,26 @@ function updateHeader() {
     const tgl    = tournamentData.Tanggal ? fmtDateStr(tournamentData.Tanggal) : '';
     document.getElementById('trnMeta').textContent =
       [region, teeBox, gender, tgl].filter(Boolean).join(' · ');
+
+    // Cek status tournament
+    isFinished = tournamentData.Status === 'SELESAI';
+
+    if (isFinished) {
+      // Tampilkan FINAL RESULT badge, sembunyikan LIVE
+      document.getElementById('liveBadge').style.display  = 'none';
+      document.getElementById('finalBadge').style.display = 'block';
+      // Sembunyikan refresh bar
+      document.querySelector('.refresh-bar').style.display = 'none';
+      // Tampilkan tombol Print Score
+      document.getElementById('btnPrintScore').style.display = 'inline-block';
+      // Update last update text
+      document.getElementById('lastUpdate').textContent = '🏆 Tournament selesai · Hasil final';
+    } else {
+      document.getElementById('liveBadge').style.display  = 'flex';
+      document.getElementById('finalBadge').style.display = 'none';
+      document.querySelector('.refresh-bar').style.display = 'block';
+      document.getElementById('btnPrintScore').style.display = 'none';
+    }
   } else {
     document.getElementById('trnName').textContent = 'All Rounds';
     document.getElementById('trnMeta').textContent = 'Semua data latihan & tournament';
@@ -620,6 +650,150 @@ async function toggleHoles(rowId, type, rank) {
   } catch(e) {
     detEl.innerHTML = `<div style="padding:10px;font-size:12px;color:var(--red);">❌ ${e.message}</div>`;
   }
+}
+
+// ── PRINT TOURNAMENT SCORE ────────────────────────────────
+async function printTournamentScore() {
+  if (!tournamentId) { alert('Tidak ada tournament yang dipilih'); return; }
+
+  const btn = document.getElementById('btnPrintScore');
+  btn.textContent = '⏳ Memuat...';
+  btn.disabled    = true;
+
+  try {
+    const res    = await fetch(`${API_URL}?action=getTournamentScores&tournamentId=${encodeURIComponent(tournamentId)}`, { redirect:'follow' });
+    const result = await res.json();
+    if (result.status !== 'ok') throw new Error(result.message);
+
+    const trn    = result.tournament;
+    const scores = result.scores;
+
+    if (!scores.length) { alert('Belum ada score untuk tournament ini'); btn.textContent = '📄 Print Score'; btn.disabled = false; return; }
+
+    const PAR_P = {1:3,2:5,3:5,4:4,5:4,6:4,7:3,8:5,9:3,10:3,11:5,12:5,13:4,14:4,15:4,16:3,17:5,18:3};
+    const DIST  = {1:193,2:451,3:414,4:345,5:350,6:293,7:159,8:436,9:129,10:177,11:441,12:309,13:291,14:307,15:293,16:147,17:418,18:129};
+
+    const teeBox   = trn.TeeBox || 'BiruPutih';
+    const front    = teeBox === 'Putih' ? [] : [1,2,3,4,5,6,7,8,9];
+    const back     = teeBox === 'Biru'  ? [] : [10,11,12,13,14,15,16,17,18];
+    const allHoles = [...front, ...back];
+
+    const parOut = front.reduce((s,h) => s+PAR_P[h], 0);
+    const parIn  = back.reduce((s,h)  => s+PAR_P[h], 0);
+    const parTot = allHoles.reduce((s,h) => s+PAR_P[h], 0);
+
+    function thS(extra) { return `padding:3px 4px;border:1px solid #ccc;text-align:center;font-size:9px;font-weight:700;${extra||''}`; }
+    function tdS(extra) { return `padding:3px 4px;border:1px solid #ddd;text-align:center;font-size:9px;${extra||''}`; }
+
+    // Header holes
+    const holeHeaders = allHoles.map(h => `<th style="${thS()}">${h}</th>`).join('');
+    const hasOutIn    = front.length && back.length;
+    const outInHdr    = hasOutIn ? `<th style="${thS()}">Out</th><th style="${thS()}">In</th>` : '';
+
+    // Par row
+    const parCells   = allHoles.map(h => `<td style="${tdS('color:#0e9aa7;font-weight:700;')}">${PAR_P[h]}</td>`).join('');
+    const outInPar   = hasOutIn ? `<td style="${tdS('color:#0e9aa7;font-weight:700;')}">${parOut}</td><td style="${tdS('color:#0e9aa7;font-weight:700;')}">${parIn}</td>` : '';
+
+    // Dist row
+    const distCells  = allHoles.map(h => `<td style="${tdS('color:#0e9aa7;font-size:8px;')}">${DIST[h]||'-'}m</td>`).join('');
+    const outInDist  = hasOutIn ? `<td style="${tdS()}">-</td><td style="${tdS()}">-</td>` : '';
+
+    // Player rows
+    let playerRows = '';
+    scores.forEach((p, pi) => {
+      let out = 0, ins = 0;
+      const holeCells = allHoles.map(h => {
+        const sc   = parseInt(p.holes['h'+h]) || 0;
+        const par  = PAR_P[h];
+        const diff = sc > 0 ? sc - par : null;
+        const color = diff === null ? '#555'
+                    : diff <= -2 ? '#E64A19'
+                    : diff === -1 ? '#2E7D32'
+                    : diff === 0  ? '#0277BD'
+                    : diff === 1  ? '#546E7A' : '#B71C1C';
+        if (sc > 0) { if (h <= 9) out += sc; else ins += sc; }
+        return `<td style="${tdS('font-weight:700;')}"><span style="color:${color};">${sc||'-'}</span></td>`;
+      }).join('');
+
+      const outInCells = hasOutIn
+        ? `<td style="${tdS('font-weight:700;color:#333;')}">${out||'-'}</td><td style="${tdS('font-weight:700;color:#333;')}">${ins||'-'}</td>`
+        : '';
+
+      const rowBg = pi % 2 === 0 ? '#fff' : '#f8f9fa';
+      playerRows += `<tr style="background:${rowBg};">
+        <td style="${tdS('font-weight:700;')}">${pi+1}</td>
+        <td style="${tdS('text-align:left;padding-left:6px;white-space:nowrap;min-width:100px;')}">${p.gelar} ${p.pemain}</td>
+        ${holeCells}
+        ${outInCells}
+        <td style="${tdS('font-weight:700;color:#f5a623;font-size:10px;')}">${p.gross||'-'}</td>
+        <td style="${tdS('font-weight:700;color:#9b59b6;font-size:10px;')}">${p.hcp||0}</td>
+        <td style="${tdS('font-weight:700;color:#27ae60;font-size:10px;')}">${p.nett||'-'}</td>
+      </tr>`;
+    });
+
+    const printHtml = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8">
+<title>Score - ${trn.Nama}</title>
+<style>
+  *{box-sizing:border-box;}
+  body{font-family:Arial,sans-serif;padding:8px;color:#000;font-size:9px;}
+  @page{size:A4 landscape;margin:8mm;}
+  @media print{body{padding:0;}}
+  table{border-collapse:collapse;width:100%;}
+</style>
+</head><body>
+  <div style="text-align:center;margin-bottom:8px;border-bottom:2px solid #0d1821;padding-bottom:6px;">
+    <div style="font-size:16px;font-weight:700;color:#0d1821;">⛳ PERLABIAN GOLF CLUB · PGC SCORECARDS 2026</div>
+    <div style="font-size:11px;font-weight:700;color:#333;margin-top:2px;">${trn.Nama}</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">
+      📅 ${fmtDateStr(trn.Tanggal)} &nbsp;·&nbsp; 🏌️ ${teeBox} &nbsp;·&nbsp; 👥 ${scores.length} Peserta &nbsp;·&nbsp; 🌍 ${trn.Region}
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr style="background:#0d1821;color:white;">
+        <th style="${thS('background:#0d1821;color:white;width:20px;')}">No</th>
+        <th style="${thS('background:#0d1821;color:white;text-align:left;padding-left:6px;min-width:100px;')}">Nama Golfer</th>
+        ${holeHeaders.replace(/style="[^"]*"/g, () => `style="${thS('background:#0d1821;color:white;')}"` )}
+        ${hasOutIn ? `<th style="${thS('background:#0d1821;color:white;')}">Out</th><th style="${thS('background:#0d1821;color:white;')}">In</th>` : ''}
+        <th style="${thS('background:#0d1821;color:#f5a623;')}">Gross</th>
+        <th style="${thS('background:#0d1821;color:#9b59b6;')}">HCP</th>
+        <th style="${thS('background:#0d1821;color:#2ecc71;')}">Nett</th>
+      </tr>
+      <tr style="background:#e8f4f8;">
+        <td style="${tdS('font-weight:700;color:#0e9aa7;')}">Par</td>
+        <td style="${tdS('text-align:left;padding-left:6px;color:#0e9aa7;font-weight:700;')}">Par Lapangan</td>
+        ${parCells}${outInPar}
+        <td style="${tdS('font-weight:700;color:#f5a623;')}">${parTot}</td>
+        <td style="${tdS()}">-</td><td style="${tdS()}">-</td>
+      </tr>
+      <tr style="background:#f0f8ff;">
+        <td style="${tdS('color:#0e9aa7;')}">Jarak</td>
+        <td style="${tdS('text-align:left;padding-left:6px;color:#0e9aa7;')}">Meter</td>
+        ${distCells}${outInDist}
+        <td style="${tdS()}">-</td><td style="${tdS()}">-</td><td style="${tdS()}">-</td>
+      </tr>
+    </thead>
+    <tbody>${playerRows}</tbody>
+  </table>
+  <div style="text-align:center;font-size:8px;color:#999;margin-top:8px;border-top:1px solid #eee;padding-top:4px;">
+    PGC Scorecards 2026 · pgc-scorecards.vercel.app · Dicetak: ${new Date().toLocaleString('id-ID')}
+  </div>
+</body></html>`;
+
+    const w = window.open('', '_blank', 'width=1100,height=750');
+    if (!w) { alert('Popup diblokir. Izinkan popup lalu coba lagi.'); return; }
+    w.document.write(printHtml);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 600);
+
+  } catch(e) {
+    alert('Gagal: ' + e.message);
+  }
+
+  btn.textContent = '📄 Print Score';
+  btn.disabled    = false;
 }
 
 // ── HELPERS ───────────────────────────────────────────────
