@@ -2,644 +2,1149 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PGC Live Leaderboard 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PGC Scorecards 2026</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#030d14;
-  --bg2:#071624;
-  --bg3:#0c2035;
-  --teal:#00d4ff;
-  --teal2:#00a8cc;
-  --gold:#ffd700;
-  --gold2:#ffaa00;
-  --green:#00e676;
-  --red:#ff4444;
-  --silver:#c0c0c0;
-  --bronze:#cd7f32;
-  --text:#ffffff;
-  --text2:#7fa8bc;
-  --border:#0e2d45;
+  --bg:#0d1821;--bg2:#12202e;--bg3:#1a2d3e;
+  --teal:#0e9aa7;--teal2:#3ecad6;
+  --gold:#f5a623;--green:#2ecc71;--red:#e74c3c;
+  --orange:#e67e22;--purple:#9b59b6;
+  --text:#e8f4f8;--text2:#7fa8bc;
+  --border:#1f3347;--cell:#0f1e2c;
 }
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,sans-serif;min-height:100vh;overscroll-behavior:none;}
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Rajdhani',sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
+/* ── SPLASH ───────────────────────────────────────────── */
+#splash{
+  position:fixed;inset:0;z-index:9998;
+  background:linear-gradient(160deg,#030d14 0%,#071624 50%,#030d14 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px;text-align:center;
 }
-
-/* BACKGROUND */
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse at 20% 20%, rgba(0,212,255,.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(255,215,0,.04) 0%, transparent 60%);
-  pointer-events:none;z-index:0;
-}
-
-/* HEADER */
-.hdr{
-  background:linear-gradient(135deg,#030d14 0%,#071624 50%,#030d14 100%);
-  border-bottom:2px solid var(--teal);
-  padding:14px 32px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:relative;z-index:10;
-}
-.hdr::after{
-  content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-}
-.hdr-left{display:flex;align-items:center;gap:16px;}
-.hdr-logo{
-  width:56px;height:56px;
+.splash-logo{
+  width:90px;height:90px;
   background:linear-gradient(135deg,var(--teal),var(--teal2));
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:28px;
-  box-shadow:0 0 20px rgba(0,212,255,.4);
+  font-size:44px;margin-bottom:28px;
+  box-shadow:0 0 40px rgba(14,154,167,.5),0 0 80px rgba(14,154,167,.2);
+  animation:splashPulse 2s ease-in-out infinite;
 }
-.hdr-title{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);letter-spacing:3px;line-height:1;}
-.hdr-sub{font-size:13px;color:var(--teal);letter-spacing:2px;font-weight:600;}
-.hdr-right{text-align:right;}
-.hdr-tournament{font-family:'Bebas Neue';font-size:22px;color:var(--text);letter-spacing:2px;}
-.hdr-meta{font-size:12px;color:var(--text2);letter-spacing:1px;}
-.live-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,68,68,.15);border:1px solid var(--red);
-  color:var(--red);font-size:12px;font-weight:700;
-  padding:4px 12px;border-radius:20px;letter-spacing:2px;
-  margin-top:4px;
-}
-.live-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes splashPulse{0%,100%{box-shadow:0 0 40px rgba(14,154,167,.5),0 0 80px rgba(14,154,167,.2);}50%{box-shadow:0 0 60px rgba(14,154,167,.8),0 0 120px rgba(14,154,167,.3);}}
+.splash-club{font-size:13px;color:var(--teal);font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.splash-title{font-size:32px;font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:6px;line-height:1.1;}
+.splash-quote{font-size:15px;color:var(--text2);margin-bottom:8px;font-style:italic;}
+.splash-quote2{font-size:18px;font-weight:700;color:var(--teal2);margin-bottom:32px;letter-spacing:1px;}
+.splash-progress{width:200px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-bottom:20px;}
+.splash-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:0%;animation:splashFill 3s linear forwards;}
+@keyframes splashFill{from{width:0%;}to{width:100%;}}
+.splash-skip{background:transparent;border:1px solid var(--border);color:var(--text2);padding:8px 20px;border-radius:20px;font-size:12px;cursor:pointer;letter-spacing:1px;}
+.splash-skip:active{opacity:.7;}
 
-/* REFRESH TIMER */
-.refresh-bar{
-  height:3px;background:var(--border);position:relative;overflow:hidden;
-}
-.refresh-progress{
-  height:100%;
-  background:linear-gradient(90deg,var(--teal),var(--gold));
-  width:100%;
-  animation:countdown 30s linear infinite;
-  transform-origin:left;
-}
-@keyframes countdown{from{width:100%;}to{width:0%;}}
+/* ── TABS ─────────────────────────────────────────────── */
+.sc-tab{flex:1;padding:11px 6px;text-align:center;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.sc-tab-active{color:var(--teal2);border-bottom-color:var(--teal);}
 
-/* MAIN LAYOUT */
-.main{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-  padding:20px 24px 24px;
-  position:relative;z-index:1;
-}
+/* ── HEADER ───────────────────────────────────────────── */
+.hdr{background:linear-gradient(135deg,#0d1821 0%,#0e2233 100%);border-bottom:2px solid var(--teal);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.hdr-logo{display:flex;align-items:center;gap:8px;}
+.hdr-icon{width:32px;height:32px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.hdr-name{font-size:15px;font-weight:700;color:var(--teal2);letter-spacing:.5px;}
+.hdr-sub{font-size:10px;color:var(--text2);}
+.hdr-badge{background:rgba(14,154,167,.2);border:1px solid var(--teal);color:var(--teal2);font-size:10px;padding:3px 8px;border-radius:10px;}
 
-/* PANEL */
-.panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.panel-hdr{
-  padding:12px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
-.panel-title{font-family:'Bebas Neue';font-size:22px;letter-spacing:2px;}
-.panel-title.gross{color:var(--gold);}
-.panel-title.nett{color:var(--green);}
-.panel-sub{font-size:11px;color:var(--text2);letter-spacing:1px;font-weight:600;}
-.panel-count{font-size:12px;color:var(--text2);}
+/* ── SCREENS ──────────────────────────────────────────── */
+.screen{display:none;padding:14px 12px 80px;}
+.screen.active{display:block;}
 
-/* RANK ROWS */
-.rank-row{
-  border-bottom:1px solid var(--border);
-  transition:background .2s;
-}
-.rank-row:last-child{border:none;}
-.rank-summary{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 16px;
-  cursor:pointer;
-}
-.rank-summary:hover{background:rgba(0,212,255,.04);}
+/* ── GENDER BTN ───────────────────────────────────────── */
+.g-btn{flex:1;padding:10px 6px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.g-btn.g-active{background:var(--teal);color:#fff;border-color:var(--teal);}
 
-/* RANK NUMBER */
-.rank-num{
-  font-family:'Bebas Neue';font-size:28px;min-width:36px;text-align:center;line-height:1;
-}
-.rank-1 .rank-num{color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.5);}
-.rank-2 .rank-num{color:var(--silver);}
-.rank-3 .rank-num{color:var(--bronze);}
-.rank-4 .rank-num,.rank-5 .rank-num{color:var(--text2);}
-.rank-other .rank-num{color:var(--border);font-size:18px;}
+/* ── FORM ─────────────────────────────────────────────── */
+.sec-title{font-size:11px;color:var(--teal2);font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;margin-top:20px;}
+.sec-title:first-child{margin-top:4px;}
+label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:600;}
+select,input[type=date]{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:11px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;-webkit-appearance:none;appearance:none;}
+select:focus,input:focus{outline:none;border-color:var(--teal);}
+option{background:var(--bg2);}
 
-/* MEDAL */
-.medal{font-size:18px;min-width:24px;text-align:center;}
+/* ── PLAYER ROW ───────────────────────────────────────── */
+.player-row{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.player-num{background:var(--teal);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.player-row select{margin:0;flex:1;font-size:13px;padding:8px 10px;}
+.btn-remove{background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;}
 
-/* PHOTO */
-.player-photo{
-  width:42px;height:42px;border-radius:50%;
-  object-fit:cover;flex-shrink:0;
-  border:2px solid var(--border);
-  background:var(--bg3);
-}
-.player-photo-placeholder{
-  width:42px;height:42px;border-radius:50%;
-  background:var(--bg3);border:2px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
-}
+/* ── BUTTONS ──────────────────────────────────────────── */
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;transition:opacity .2s;}
+.btn:active{opacity:.8;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-gold{background:var(--gold);color:#0d1821;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-add{width:100%;padding:10px;border:1.5px dashed var(--border);background:transparent;color:var(--text2);border-radius:10px;font-size:13px;cursor:pointer;margin-bottom:12px;}
 
-/* PLAYER INFO */
-.player-info{flex:1;min-width:0;}
-.player-name{
-  font-size:15px;font-weight:700;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  line-height:1.2;
-}
-.player-gelar{font-size:11px;color:var(--teal);font-weight:600;}
-.player-ou{font-size:11px;color:var(--text2);}
+/* ── INFO BAR ─────────────────────────────────────────── */
+.info-bar{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text2);}
+.info-bar b{color:var(--teal2);}
 
-/* SCORES */
-.score-group{display:flex;gap:12px;flex-shrink:0;}
-.score-item{text-align:center;}
-.score-val{font-family:'Bebas Neue';font-size:24px;line-height:1;}
-.score-lbl{font-size:9px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;}
-.score-gross .score-val{color:var(--gold);}
-.score-nett  .score-val{color:var(--green);}
-.score-hcp   .score-val{color:var(--text2);}
-.score-poin  .score-val{color:var(--teal);}
+/* ── SCORECARD TABLE ──────────────────────────────────── */
+.sc-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid var(--border);}
+table{border-collapse:collapse;width:100%;}
+th{background:var(--bg2);font-size:11px;color:var(--text2);padding:8px 4px;border:1px solid var(--border);position:sticky;top:0;white-space:nowrap;}
+th.th-player{min-width:58px;max-width:80px;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--teal2);}
+td{border:1px solid var(--border);text-align:center;padding:0;white-space:nowrap;}
+td.hole-lbl{background:var(--bg2);font-weight:700;font-size:12px;padding:3px 4px;min-width:36px;color:var(--text);width:36px;line-height:1.3;vertical-align:middle;}
+.hole-dist{font-size:9px;color:var(--teal2);font-weight:600;display:block;margin-top:1px;}
+td.par-cell{background:var(--bg2);font-size:12px;color:var(--teal);width:28px;padding:0 4px;}
+td.score-cell{padding:2px;width:58px;}
+td.score-cell input{
+  width:54px;height:38px;
+  background:var(--cell);border:none;
+  color:var(--text);text-align:center;
+  font-size:17px;font-weight:700;
+  padding:0;border-radius:4px;
+  -moz-appearance:textfield;
+  touch-action:manipulation;
+}
+td.score-cell input::-webkit-inner-spin-button,
+td.score-cell input::-webkit-outer-spin-button{-webkit-appearance:none;}
+td.score-cell input:focus{outline:2px solid var(--teal);background:#0e2233;}
+td.score-cell input.eagle {color:#FFAB91;font-weight:900;}  /* Peach — Eagle+ */
+td.score-cell input.birdie{color:#69F0AE;}                  /* Hijau cerah — Birdie */
+td.score-cell input.par   {color:#40C4FF;}                  /* Biru cerah — Par */
+td.score-cell input.bogey {color:#212121;}                  /* Hitam — Bogey */
+td.score-cell input.dbogey{color:#FF1744;}                  /* Merah — Double Bogey+ */
 
-/* EXPAND ARROW */
-.expand-arr{color:var(--text2);font-size:12px;transition:transform .2s;flex-shrink:0;}
-.expanded .expand-arr{transform:rotate(180deg);}
+/* ── SUBTOTAL ROWS ────────────────────────────────────── */
+tr.row-sep td{height:3px;background:var(--border);padding:0;}
+tr.row-out td,tr.row-in td{background:#0e1f2e;font-weight:700;font-size:13px;padding:6px 4px;color:var(--teal2);}
+tr.row-total td{background:#0d1f1a;font-weight:700;font-size:13px;padding:6px 4px;color:var(--gold);}
+tr.row-poin td{background:#14102a;font-size:12px;padding:5px 4px;color:var(--purple);}
+tr.row-hcp td{background:#0e1c2a;font-size:12px;padding:5px 4px;color:var(--text2);}
+tr.row-nett td{background:#0d1f19;font-weight:700;font-size:13px;padding:6px 4px;color:var(--green);}
+td.row-lbl{text-align:left;padding-left:8px!important;font-size:11px;color:var(--text2)!important;font-weight:600!important;}
 
-/* HOLES DETAIL */
-.holes-detail{
-  display:none;
-  padding:10px 16px 14px;
-  border-top:1px solid var(--border);
-  background:rgba(0,0,0,.3);
-}
-.holes-detail.open{display:block;}
-.holes-grid{
-  display:flex;gap:6px;flex-wrap:wrap;
-}
-.hole-cell{
-  text-align:center;
-  min-width:32px;flex:1;
-  background:var(--bg3);
-  border-radius:6px;
-  padding:4px 2px;
-  border:1px solid var(--border);
-}
-.hole-num{font-size:9px;color:var(--text2);font-weight:600;}
-.hole-score{font-size:16px;font-weight:700;line-height:1.2;}
-.hole-par{font-size:9px;color:var(--text2);}
-.h-eagle{color:#ff6b35;}
-.h-birdie{color:var(--red);}
-.h-par{color:var(--text);}
-.h-bogey{color:var(--text2);}
-.h-dbogey{color:#2a4a5a;}
-.holes-sub{display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--text2);}
-.holes-sub b{color:var(--text);}
+/* ── SUMMARY ──────────────────────────────────────────── */
+.sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+.sum-name{font-size:15px;font-weight:700;color:var(--teal2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sum-item{background:var(--bg3);border-radius:8px;padding:10px;text-align:center;}
+.sum-val{font-size:22px;font-weight:700;line-height:1;}
+.sum-lbl{font-size:10px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
 
-/* TOP 5 INDICATOR */
-.top5-badge{
-  font-size:9px;color:var(--teal);
-  background:rgba(0,212,255,.1);
-  border:1px solid rgba(0,212,255,.2);
-  padding:1px 6px;border-radius:4px;
-  letter-spacing:1px;font-weight:700;
-}
+/* ── SUCCESS ──────────────────────────────────────────── */
+.success-wrap{text-align:center;padding:24px 16px 16px;}
+.success-icon{font-size:64px;margin-bottom:12px;}
+.success-title{font-size:22px;font-weight:700;color:var(--teal2);margin-bottom:6px;}
+.success-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.result-row{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.result-name{font-weight:700;color:var(--teal2);font-size:14px;}
+.result-scores{font-size:12px;color:var(--text2);display:flex;gap:10px;}
+.result-scores b{font-size:14px;}
 
-/* EMPTY STATE */
-.empty-state{
-  text-align:center;padding:60px 20px;color:var(--text2);
-}
-.empty-icon{font-size:48px;margin-bottom:12px;}
-
-/* FOOTER */
-.footer{
-  text-align:center;padding:12px;
-  font-size:11px;color:var(--text2);
-  border-top:1px solid var(--border);
-  letter-spacing:1px;
-  position:relative;z-index:1;
-}
-
-/* LOADING */
-#loading{
-  position:fixed;inset:0;
-  background:var(--bg);
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;z-index:9999;
-}
-.spinner{
-  width:48px;height:48px;
-  border:3px solid var(--border);
-  border-top-color:var(--teal);
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-}
+/* ── LOADING ──────────────────────────────────────────── */
+#loading{position:fixed;inset:0;background:rgba(13,24,33,.95);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9999;font-size:14px;color:var(--teal2);}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:'Bebas Neue';font-size:24px;color:var(--teal);letter-spacing:3px;}
 
-/* LAST UPDATE */
-.last-update{font-size:11px;color:var(--text2);text-align:center;padding:6px;letter-spacing:1px;}
+/* ── TOAST ────────────────────────────────────────────── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg2);color:var(--text);padding:10px 20px;border-radius:20px;font-size:13px;border:1px solid var(--teal);display:none;z-index:9999;white-space:nowrap;max-width:90vw;text-align:center;}
+
+/* ── BOTTOM BAR ───────────────────────────────────────── */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;z-index:100;}
+
+/* ── PRINT PDF ────────────────────────────────────────── */
+@media print {
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea {
+    position: fixed; left: 0; top: 0; width: 100%;
+    background: white; color: black; padding: 16px;
+    font-family: Arial, sans-serif; font-size: 11px;
+  }
+}
 </style>
 </head>
 <body>
 
-<div id="loading">
-  <div class="spinner"></div>
-  <div class="loading-text">Loading Leaderboard...</div>
+<!-- ── SPLASH SCREEN ────────────────────────────────────── -->
+<div id="splash">
+  <div class="splash-logo">⛳</div>
+  <div class="splash-club">Perlabian Golf Club · 2026</div>
+  <div class="splash-title">Selamat Datang</div>
+  <div class="splash-title" style="color:var(--teal2);font-size:24px;margin-bottom:12px;">Golfer PGC</div>
+  <div class="splash-quote">Selamat Bermain</div>
+  <div class="splash-quote2">⛳ Do Your Best ⛳</div>
+  <div id="splashLoading" style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px;">
+    <div class="spinner" style="border-top-color:var(--gold);"></div>
+    <div style="font-size:11px;color:var(--text2);letter-spacing:1px;">Memuat data...</div>
+  </div>
+  <button id="btnMasuk" class="splash-skip" style="display:none;background:var(--teal);color:#fff;border:none;padding:12px 32px;font-size:15px;font-weight:700;border-radius:10px;letter-spacing:2px;margin-top:16px;" onclick="hideSplash()">
+    MASUK ⛳
+  </button>
 </div>
 
-<!-- HEADER -->
+<div id="loading"><div class="spinner"></div><div>Memuat data PGC...</div></div>
+<div id="toast"></div>
+<div id="printArea" style="display:none;"></div>
+
+<!-- ── HEADER ─────────────────────────────────────────── -->
 <div class="hdr">
-  <div class="hdr-left">
-    <div class="hdr-logo">⛳</div>
+  <div class="hdr-logo">
+    <div class="hdr-icon">⛳</div>
     <div>
-      <div class="hdr-title">Perlabian Golf Club</div>
-      <div class="hdr-sub">PGC LIVE LEADERBOARD · 2026</div>
+      <div class="hdr-name">PGC Scorecards</div>
+      <div class="hdr-sub">Perlabian Golf Club · 2026</div>
     </div>
   </div>
-  <div class="hdr-right">
-    <div class="hdr-tournament" id="trnName">—</div>
-    <div class="hdr-meta" id="trnMeta">—</div>
-    <div class="live-badge"><span class="live-dot"></span> LIVE</div>
+  <div id="hdrBadge" class="hdr-badge">loading...</div>
+</div>
+
+<!-- ── TABS ───────────────────────────────────────────── -->
+<div style="display:flex;background:#12202e;border-bottom:1px solid var(--border);">
+  <div id="tab-input"  class="sc-tab sc-tab-active" onclick="switchScTab('input')">⛳ Scorecard</div>
+  <div id="tab-record" class="sc-tab"               onclick="switchScTab('record')">📋 Record</div>
+</div>
+
+<!-- ── SCREEN: SETUP ──────────────────────────────────── -->
+<div id="screen-setup" class="screen active">
+  <div class="sec-title">Tanggal & Tipe</div>
+
+  <label>Tanggal Main</label>
+  <input type="date" id="tanggal">
+
+  <label>Tee Box</label>
+  <select id="teeBox">
+    <option value="Biru">⬤ Biru — Hole 1–9 (Front 9)</option>
+    <option value="Putih">⬤ Putih — Hole 10–18 (Back 9)</option>
+    <option value="BiruPutih">⬤ BiruPutih — 18 Hole (Full Round)</option>
+  </select>
+
+  <label>Tipe Permainan</label>
+  <select id="tipePermainan" onchange="toggleTournament()">
+    <option value="latihan">🏋️ Latihan</option>
+    <option value="tournament">🏆 Tournament</option>
+  </select>
+
+  <div id="trn-section" style="display:none;">
+    <label>Pilih Tournament Aktif</label>
+    <select id="tournamentId">
+      <option value="">-- Pilih Tournament --</option>
+    </select>
+  </div>
+
+  <div class="sec-title">Kategori Pemain</div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <button id="gBtn-mens"   class="g-btn g-active" onclick="setGender('mens')">👨 Men's</button>
+    <button id="gBtn-ladies" class="g-btn"          onclick="setGender('ladies')">👩 Ladies</button>
+    <button id="gBtn-open"   class="g-btn"          onclick="setGender('open')">🌐 Open</button>
+  </div>
+
+  <div class="sec-title">Pemain (Maks 5)</div>
+  <div id="playerList"></div>
+  <button class="btn-add" id="addPlayerBtn" onclick="addPlayer()">＋ Tambah Pemain</button>
+
+  <button class="btn btn-gold" onclick="startScorecard()" style="margin-top:8px;">
+    ▶ Mulai Scorecard
+  </button>
+</div>
+
+<!-- ── SCREEN: SCORECARD ──────────────────────────────── -->
+<div id="screen-scorecard" class="screen">
+  <div class="info-bar" id="infoBar"></div>
+  <div class="sc-wrap">
+    <table id="scTable"></table>
+  </div>
+  <div style="height:70px;"></div>
+  <div class="bottom-bar">
+    <button class="btn btn-outline" style="width:30%;margin:0;" onclick="showScreen('setup')">◀ Kembali</button>
+    <button class="btn btn-gold"    style="width:70%;margin:0;" onclick="showSummary()">📊 Lihat Hasil</button>
   </div>
 </div>
 
-<!-- REFRESH BAR -->
-<div class="refresh-bar"><div class="refresh-progress" id="refreshBar"></div></div>
-
-<!-- MAIN -->
-<div class="main">
-  <!-- GROSS -->
-  <div class="panel">
-    <div class="panel-hdr">
-      <div>
-        <div class="panel-title gross">🏆 Gross Score</div>
-        <div class="panel-sub">Lower is better · Stroke Play</div>
-      </div>
-      <div class="panel-count" id="grossCount"></div>
-    </div>
-    <div id="grossList">
-      <div class="empty-state"><div class="empty-icon">🏌️</div>Memuat data...</div>
-    </div>
-  </div>
-
-  <!-- NETT -->
-  <div class="panel">
-    <div class="panel-hdr">
-      <div>
-        <div class="panel-title nett">🎯 Nett Score</div>
-        <div class="panel-sub">Gross − Handicap</div>
-      </div>
-      <div class="panel-count" id="nettCount"></div>
-    </div>
-    <div id="nettList">
-      <div class="empty-state"><div class="empty-icon">🏌️</div>Memuat data...</div>
-    </div>
+<!-- ── SCREEN: SUMMARY ────────────────────────────────── -->
+<div id="screen-summary" class="screen">
+  <div class="sec-title">Ringkasan Hasil</div>
+  <div id="summaryContent"></div>
+  <div style="height:70px;"></div>
+  <div class="bottom-bar">
+    <button class="btn btn-outline" style="width:38%;margin:0;" onclick="showScreen('scorecard')">◀ Edit</button>
+    <button class="btn btn-green"   style="width:62%;margin:0;" id="btnSave" onclick="saveScore()">💾 Simpan Score</button>
   </div>
 </div>
 
-<div class="last-update" id="lastUpdate"></div>
+<!-- ── SCREEN: SUCCESS ────────────────────────────────── -->
+<div id="screen-success" class="screen">
+  <div class="success-wrap">
+    <div class="success-icon">🏆</div>
+    <div class="success-title">Score Tersimpan!</div>
+    <div class="success-sub" id="successMsg"></div>
+    <div id="resultCards" style="text-align:left;margin-bottom:16px;"></div>
+    <button class="btn btn-gold" onclick="generatePDF()">📄 Download / Share PDF</button>
+    <button class="btn btn-primary" onclick="resetApp()">🔄 Scorecard Baru</button>
+  </div>
+</div>
 
-<div class="footer">
-  PERLABIAN GOLF CLUB · PGC SCORECARDS 2026 · AUTO-REFRESH 30 DETIK
+<!-- ── SCREEN: RECORD ─────────────────────────────────── -->
+<div id="screen-record" class="screen">
+  <div style="position:relative;margin-bottom:12px;">
+    <input type="text" id="recordSearch"
+      placeholder="🔍 Cari nama pemain..."
+      oninput="filterRecord()"
+      style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;">
+  </div>
+  <div id="recordList">
+    <div style="text-align:center;padding:32px;color:var(--text2);font-size:13px;">
+      <div style="font-size:36px;margin-bottom:12px;">📋</div>
+      Memuat data record...
+    </div>
+  </div>
 </div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxmyO1lYLa43sOwbkw9f9c4CNPWkjHdnp4eAO93SS3H-l7aYdtXdxViMujiieDjRYMp/exec';
 
-const PAR_H = {
+const PAR = {
   1:3,2:5,3:5,4:4,5:4,6:4,7:3,8:5,9:3,
   10:3,11:5,12:5,13:4,14:4,15:4,16:3,17:5,18:3
 };
 
-const MEDALS = ['🥇','🥈','🥉','4','5'];
+let masterData     = null;
+let playerCount    = 0;
+let selectedGender = 'mens';
+let allRecords     = [];
+let lastSaveData   = null; // simpan data untuk PDF
 
-let anggotaMap  = {}; // key: nama|gelar → { foto, ou }
-let tournamentId = '';
-let tournamentData = null;
-let refreshTimer = null;
+// ── SPLASH ──────────────────────────────────────────────
+function hideSplash() {
+  const s = document.getElementById('splash');
+  if (!s) return;
+  s.style.transition = 'opacity .5s';
+  s.style.opacity = '0';
+  setTimeout(() => s.style.display = 'none', 500);
+}
 
-// ── INIT ──────────────────────────────────────────────────
+function splashReady() {
+  // Sembunyikan spinner, tampilkan tombol Masuk
+  document.getElementById('splashLoading').style.display = 'none';
+  const btn = document.getElementById('btnMasuk');
+  if (btn) btn.style.display = 'block';
+}
+
+// ── TAB SWITCHING ────────────────────────────────────────
+function switchScTab(name) {
+  ['input','record'].forEach(t => {
+    document.getElementById('tab-' + t)?.classList.remove('sc-tab-active');
+  });
+  document.getElementById('tab-' + name)?.classList.add('sc-tab-active');
+
+  if (name === 'input') {
+    document.getElementById('screen-record').style.display = 'none';
+    // Show setup screen
+    ['setup','scorecard','summary','success'].forEach(s => {
+      const el = document.getElementById('screen-' + s);
+      if (el) el.style.display = 'none';
+    });
+    const setupEl = document.getElementById('screen-setup');
+    if (setupEl) { setupEl.style.display = 'block'; setupEl.classList.add('active'); }
+  } else {
+    ['setup','scorecard','summary','success'].forEach(s => {
+      const el = document.getElementById('screen-' + s);
+      if (el) el.style.display = 'none';
+    });
+    document.getElementById('screen-record').style.display = 'block';
+    allRecords  = [];
+    openDetailId = '';
+    loadRecord();
+  }
+}
+
+function setGender(g) {
+  selectedGender = g;
+  ['mens','ladies','open'].forEach(k => {
+    document.getElementById('gBtn-' + k)?.classList.remove('g-active');
+  });
+  document.getElementById('gBtn-' + g)?.classList.add('g-active');
+  playerCount = 0;
+  document.getElementById('playerList').innerHTML = '';
+  document.getElementById('addPlayerBtn').style.display = 'block';
+  addPlayer();
+}
+
+// ── INIT ─────────────────────────────────────────────────
 window.onload = async () => {
-  // Ambil tournament ID dari URL ?tid=xxx
-  const params = new URLSearchParams(window.location.search);
-  tournamentId = params.get('tid') || '';
-
-  await loadData();
+  document.getElementById('tanggal').value = todayStr();
+  try {
+    const res = await fetch(API_URL + '?action=getMasterData', { redirect:'follow' });
+    masterData = await res.json();
+    if (masterData.status !== 'ok') throw new Error(masterData.message);
+    // Build distance map dari teeBox data
+    window._dist = buildDistMap(masterData.teeBox || []);
+    populateTournaments();
+    document.getElementById('hdrBadge').textContent = masterData.anggota.length + ' anggota';
+  } catch(e) {
+    showToast('⚠️ Gagal memuat data: ' + e.message, 4000);
+    document.getElementById('hdrBadge').textContent = 'Offline';
+  }
+  addPlayer();
   document.getElementById('loading').style.display = 'none';
-
-  // Auto refresh setiap 30 detik
-  setInterval(() => {
-    resetRefreshBar();
-    loadData();
-  }, 30000);
+  splashReady(); // Tampilkan tombol Masuk setelah data siap
 };
 
-function resetRefreshBar() {
-  const bar = document.getElementById('refreshBar');
-  bar.style.animation = 'none';
-  bar.offsetHeight; // trigger reflow
-  bar.style.animation = 'countdown 30s linear infinite';
+// ── DISTANCE MAP ─────────────────────────────────────────
+// Biru: H1-9 pakai Biru Distance
+// Putih: H10-18 pakai Putih Distance
+// BiruPutih: H1-9 Biru Distance, H10-18 Putih Distance
+function buildDistMap(teeBoxData) {
+  const dist = {};
+  (teeBoxData || []).forEach(row => {
+    const hole = parseInt(row['Hole']);
+    if (!hole) return;
+    if (hole <= 9) {
+      // Biru Distance
+      const bd = parseInt(row['Biru Distance'] || row['BiruDistance'] || 0);
+      dist[hole] = bd || 0;
+    } else {
+      // Putih Distance
+      const pd = parseInt(row['Putih Distance'] || row['PutihDistance'] || 0);
+      dist[hole] = pd || 0;
+    }
+  });
+  return dist;
 }
 
-// ── LOAD DATA ─────────────────────────────────────────────
-async function loadData() {
-  try {
-    // Load master data (anggota + foto) dan leaderboard sekaligus
-    const [masterRes, lbRes] = await Promise.all([
-      fetch(API_URL + '?action=getMasterData', { redirect:'follow' }),
-      fetch(API_URL + '?action=getLeaderboard&tournamentId=' + encodeURIComponent(tournamentId), { redirect:'follow' })
-    ]);
+function populateTournaments() {
+  if (!masterData?.tournaments) return;
+  const sel = document.getElementById('tournamentId');
+  sel.innerHTML = '<option value="">-- Pilih Tournament --</option>';
+  masterData.tournaments
+    .filter(t => t.Status === 'AKTIF')
+    .forEach(t => {
+      const o = document.createElement('option');
+      o.value = t.ID;
+      o.textContent = t.Nama + ' · ' + t.Tanggal;
+      sel.appendChild(o);
+    });
+}
 
-    const master = await masterRes.json();
-    const lb     = await lbRes.json();
+function toggleTournament() {
+  const isTrn = document.getElementById('tipePermainan').value === 'tournament';
+  document.getElementById('trn-section').style.display = isTrn ? 'block' : 'none';
+}
 
-    if (master.status === 'ok') {
-      // Build anggota map
-      anggotaMap = {};
-      (master.anggota || []).forEach(a => {
-        const key = (a.Nama || '') + '|' + (a['Gelar'] || '');
-        anggotaMap[key] = {
-          foto: a['Foto'] || '',
-          ou:   a['Operating Unit'] || '',
-          gelar: (a['Gelar'] || '').trim()
-        };
-      });
+// ── PLAYER MANAGEMENT ────────────────────────────────────
+function addPlayer() {
+  if (playerCount >= 5) { showToast('Maksimal 5 pemain'); return; }
+  playerCount++;
 
-      // Set tournament info
-      const tournaments = master.tournaments || [];
-      if (tournamentId) {
-        tournamentData = tournaments.find(t => t.ID === tournamentId);
+  let filteredAnggota = masterData?.anggota || [];
+  if (selectedGender === 'mens') {
+    filteredAnggota = filteredAnggota.filter(a => (a['Gelar']||'').trim() === 'Mr.');
+  } else if (selectedGender === 'ladies') {
+    filteredAnggota = filteredAnggota.filter(a => (a['Gelar']||'').trim() === 'Mrs.');
+  }
+
+  let opts = `<option value="">── Pilih Pemain ${playerCount} ──</option>`;
+  filteredAnggota.forEach(a => {
+    const hcp   = (a.Handicap !== undefined && a.Handicap !== '') ? a.Handicap : 0;
+    const gelar = (a['Gelar']||'').trim();
+    const icon  = gelar === 'Mrs.' ? '👩' : '👨';
+    opts += `<option value="${escHtml(a.Nama)}" data-hcp="${hcp}" data-gelar="${escHtml(gelar)}">${icon} ${escHtml(gelar)} ${escHtml(a.Nama)} · HCP ${hcp}</option>`;
+  });
+
+  const div = document.createElement('div');
+  div.className = 'player-row';
+  div.id = 'pr_' + playerCount;
+  div.innerHTML = `
+    <div class="player-num">${playerCount}</div>
+    <select id="ps_${playerCount}" style="flex:1;margin:0;">${opts}</select>
+    ${playerCount > 1 ? `<button class="btn-remove" onclick="removePlayer(${playerCount})">✕</button>` : ''}
+  `;
+  document.getElementById('playerList').appendChild(div);
+  if (playerCount >= 5) document.getElementById('addPlayerBtn').style.display = 'none';
+}
+
+function removePlayer(n) {
+  document.getElementById('pr_' + n)?.remove();
+  playerCount = document.querySelectorAll('.player-row').length;
+  document.getElementById('addPlayerBtn').style.display = 'block';
+  document.querySelectorAll('.player-row').forEach((r, i) => {
+    const num = r.querySelector('.player-num');
+    if (num) num.textContent = i + 1;
+  });
+}
+
+function getPlayers() {
+  const players = [];
+  document.querySelectorAll('.player-row').forEach(row => {
+    const sel = row.querySelector('select');
+    if (sel?.value) {
+      const opt   = sel.options[sel.selectedIndex];
+      const hcp   = parseInt(opt.getAttribute('data-hcp')) || 0;
+      const gelar = opt.getAttribute('data-gelar') || '';
+      players.push({ nama: sel.value, hcp, gelar });
+    }
+  });
+  return players;
+}
+
+// ── START SCORECARD ──────────────────────────────────────
+function startScorecard() {
+  const players = getPlayers();
+  if (!players.length) { showToast('⚠️ Pilih minimal 1 pemain'); return; }
+  const names = players.map(p => p.nama);
+  if (new Set(names).size !== names.length) { showToast('⚠️ Ada pemain duplikat'); return; }
+  if (document.getElementById('tipePermainan').value === 'tournament'
+      && !document.getElementById('tournamentId').value) {
+    showToast('⚠️ Pilih tournament terlebih dahulu'); return;
+  }
+  buildTable(players);
+  showScreen('scorecard');
+}
+
+// ── BUILD SCORECARD TABLE ────────────────────────────────
+function buildTable(players) {
+  const teeBox  = document.getElementById('teeBox').value;
+  const tanggal = document.getElementById('tanggal').value;
+  const dist    = window._dist || {};
+
+  const holes = teeBox === 'Biru'  ? range(1,9)
+              : teeBox === 'Putih' ? range(10,18)
+              : range(1,18);
+
+  const front = holes.filter(h => h <= 9);
+  const back  = holes.filter(h => h >= 10);
+
+  document.getElementById('infoBar').innerHTML =
+    `<div>📅 <b>${fmtDate(tanggal)}</b></div>` +
+    `<div>🏌️ <b>${teeBox}</b></div>` +
+    `<div>👥 <b>${players.length} pemain</b></div>`;
+
+  let h = `<thead><tr>
+    <th style="width:36px;">Hole<br><span style="font-size:8px;color:var(--teal2);font-weight:400;">meter</span></th>
+    <th style="width:28px;color:var(--teal);">Par</th>`;
+  players.forEach(p => {
+    const namaDisplay = p.gelar ? `${p.gelar} ${p.nama.split(' ')[0]}` : p.nama.split(' ')[0];
+    h += `<th class="th-player">${namaDisplay}</th>`;
+  });
+  h += `</tr></thead><tbody>`;
+
+  front.forEach(n => { h += holeRow(n, players, dist); });
+  if (front.length) {
+    const pOut = front.reduce((s,n) => s + PAR[n], 0);
+    h += statRow('row-out', 'Out', pOut, players, 'out');
+  }
+  if (back.length) h += `<tr class="row-sep"><td colspan="${2 + players.length}"></td></tr>`;
+  back.forEach(n => { h += holeRow(n, players, dist); });
+  if (back.length) {
+    const pIn = back.reduce((s,n) => s + PAR[n], 0);
+    h += statRow('row-in', 'In', pIn, players, 'in');
+  }
+
+  h += `<tr class="row-sep"><td colspan="${2 + players.length}"></td></tr>`;
+  h += statRow('row-total', 'Total', holes.reduce((s,n) => s+PAR[n],0), players, 'total');
+  h += statRow('row-poin',  'Poin',  '—', players, 'poin');
+  h += statRow('row-hcp',   'HCP',   '—', players, 'hcp');
+  h += statRow('row-nett',  'Nett',  '—', players, 'nett');
+  h += `</tbody>`;
+
+  document.getElementById('scTable').innerHTML = h;
+  window._players = players;
+  window._holes   = holes;
+  window._teeBox  = teeBox;
+  window._tanggal = tanggal;
+}
+
+function holeRow(n, players, dist) {
+  const d = dist?.[n] || 0;
+  let r = `<tr>
+    <td class="hole-lbl">
+      <div>${n}</div>
+      ${d ? `<div class="hole-dist">${d}m</div>` : ''}
+    </td>
+    <td class="par-cell">${PAR[n]}</td>`;
+  players.forEach((p, i) => {
+    r += `<td class="score-cell">
+      <input type="number" id="s_${n}_${i}"
+        min="1" max="20" inputmode="numeric"
+        placeholder="${PAR[n]}"
+        oninput="recalc()"
+        onfocus="this.select()">
+    </td>`;
+  });
+  return r + `</tr>`;
+}
+
+function statRow(cls, lbl, par, players, id) {
+  let r = `<tr class="${cls}"><td class="row-lbl">${lbl}</td><td>${par}</td>`;
+  players.forEach((p, i) => { r += `<td id="${id}_${i}">—</td>`; });
+  return r + `</tr>`;
+}
+
+// ── RECALC ───────────────────────────────────────────────
+function sf(score, par) {
+  if (!score || score <= 0) return 0;
+  const d = score - par;
+  return d <= -2 ? 4 : d === -1 ? 3 : d === 0 ? 2 : d === 1 ? 1 : 0;
+}
+
+function recalc() {
+  const players = window._players;
+  const holes   = window._holes;
+  if (!players || !holes) return;
+
+  const parMax = holes.length === 18 ? 36 : 18;
+  const front  = holes.filter(h => h <= 9);
+  const back   = holes.filter(h => h >= 10);
+
+  players.forEach((p, i) => {
+    let gross = 0, poin = 0, out = 0, inS = 0;
+    holes.forEach(h => {
+      const inp = document.getElementById('s_' + h + '_' + i);
+      const val = parseInt(inp?.value) || 0;
+      if (val > 0) {
+        gross += val; poin += sf(val, PAR[h]);
+        if (h <= 9) out += val; else inS += val;
+        const d = val - PAR[h];
+        inp.className = d <= -2 ? 'eagle' : d === -1 ? 'birdie' : d === 0 ? 'par' : d === 1 ? 'bogey' : 'dbogey';
       } else {
-        // Ambil tournament aktif terbaru
-        tournamentData = tournaments.filter(t => t.Status === 'AKTIF').slice(-1)[0];
+        if (inp) inp.className = '';
       }
-      updateHeader();
-    }
+    });
+    const hcp  = Math.max(0, parMax - poin);
+    const nett = gross > 0 ? gross - hcp : 0;
+    const set = (id, val) => { const el = document.getElementById(id+'_'+i); if(el) el.textContent = val > 0 ? val : '—'; };
+    if (front.length) set('out', out);
+    if (back.length)  set('in',  inS);
+    if (gross > 0) { set('total', gross); set('poin', poin); set('hcp', hcp); set('nett', nett); }
+  });
+}
 
-    if (lb.status === 'ok') {
-      renderGross(lb.gross || []);
-      renderNett(lb.nett   || []);
-      document.getElementById('lastUpdate').textContent =
-        'Last update: ' + fmtTime(lb.updatedAt);
+// ── SHOW SUMMARY ─────────────────────────────────────────
+function showSummary() {
+  const players = window._players;
+  const holes   = window._holes;
+  if (!players || !holes) return;
 
-      // Auto-expand top 5 setelah render
-      const topN = Math.min(5, (lb.gross||[]).length);
-      for (let i = 0; i < topN; i++) {
-        setTimeout(() => {
-          toggleHoles('grow_' + i, 'gross', i);
-          toggleHoles('nrow_' + i, 'nett',  i);
-        }, i * 200); // stagger 200ms per pemain
-      }
+  const parMax = holes.length === 18 ? 36 : 18;
+  let html = '', hasScore = false;
+
+  players.forEach((p, i) => {
+    let gross = 0, poin = 0;
+    holes.forEach(h => {
+      const val = parseInt(document.getElementById('s_' + h + '_' + i)?.value) || 0;
+      if (val > 0) { gross += val; poin += sf(val, PAR[h]); }
+    });
+    if (!gross) return;
+    hasScore = true;
+    const hcp  = Math.max(0, parMax - poin);
+    const nett = gross - hcp;
+    html += `
+    <div class="sum-card">
+      <div class="sum-name">🏌️ ${escHtml(p.gelar)} ${escHtml(p.nama)}</div>
+      <div class="sum-grid">
+        <div class="sum-item"><div class="sum-val" style="color:var(--gold);">${gross}</div><div class="sum-lbl">Gross Score</div></div>
+        <div class="sum-item"><div class="sum-val" style="color:var(--purple);">${poin}</div><div class="sum-lbl">Stableford</div></div>
+        <div class="sum-item"><div class="sum-val" style="color:var(--text2);">${hcp}</div><div class="sum-lbl">Handicap</div></div>
+        <div class="sum-item"><div class="sum-val" style="color:var(--green);">${nett}</div><div class="sum-lbl">Nett Score</div></div>
+      </div>
+    </div>`;
+  });
+
+  if (!hasScore) { showToast('⚠️ Belum ada score yang diisi'); return; }
+  document.getElementById('summaryContent').innerHTML = html;
+  showScreen('summary');
+}
+
+// ── SAVE SCORE ───────────────────────────────────────────
+async function saveScore() {
+  const players = window._players;
+  const holes   = window._holes;
+  const scores  = [];
+
+  players.forEach((p, i) => {
+    const obj = { pemain: p.nama, gelar: p.gelar || '' };
+    let has = false;
+    for (let h = 1; h <= 18; h++) {
+      const val = parseInt(document.getElementById('s_' + h + '_' + i)?.value) || 0;
+      obj['h' + h] = val;
+      if (val > 0) has = true;
     }
+    if (has) scores.push(obj);
+  });
+
+  if (!scores.length) { showToast('⚠️ Tidak ada score'); return; }
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.textContent = '⏳ Menyimpan...';
+
+  try {
+    const tanggal      = document.getElementById('tanggal').value;
+    const teeBox       = document.getElementById('teeBox').value;
+    const tipeMain     = document.getElementById('tipePermainan').value;
+    const tournamentId = document.getElementById('tournamentId').value || '';
+
+    const payload = {
+      action: 'saveScore',
+      tanggal, teeBox,
+      type: tipeMain,
+      tournamentId,
+      scores
+    };
+
+    const res    = await fetch(API_URL, {
+      method:'POST', redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    if (result.status !== 'ok') throw new Error(result.message);
+
+    // Simpan data untuk PDF
+    lastSaveData = {
+      tanggal, teeBox, tipeMain, tournamentId,
+      players: window._players,
+      holes:   window._holes,
+      results: result.results,
+      scores:  scores,
+      dist:    window._dist || {}
+    };
+
+    document.getElementById('successMsg').textContent =
+      result.message + ' · ' + fmtDate(tanggal);
+
+    let cards = '';
+    result.results.forEach(r => {
+      cards += `
+      <div class="result-row">
+        <div class="result-name">🏌️ ${escHtml(r.pemain)}</div>
+        <div class="result-scores">
+          Gross <b style="color:var(--gold);">${r.gross}</b>
+          HCP <b style="color:var(--text2);">${r.hcp}</b>
+          Nett <b style="color:var(--green);">${r.nett}</b>
+        </div>
+      </div>`;
+    });
+    document.getElementById('resultCards').innerHTML = cards;
+    showScreen('success');
 
   } catch(e) {
-    console.error('Load error:', e);
+    showToast('❌ Gagal simpan: ' + e.message, 4000);
+    btn.disabled = false;
+    btn.textContent = '💾 Simpan Score';
   }
 }
 
-function updateHeader() {
-  if (tournamentData) {
-    document.getElementById('trnName').textContent = tournamentData.Nama || 'PGC Tournament';
-    const region = tournamentData.Region || '';
-    const teeBox = tournamentData.TeeBox || '';
-    const gender = tournamentData.Gender || '';
-    const tgl    = tournamentData.Tanggal ? fmtDateStr(tournamentData.Tanggal) : '';
-    document.getElementById('trnMeta').textContent =
-      [region, teeBox, gender, tgl].filter(Boolean).join(' · ');
-  } else {
-    document.getElementById('trnName').textContent = 'All Rounds';
-    document.getElementById('trnMeta').textContent = 'Semua data latihan & tournament';
-  }
-}
+// ── GENERATE PDF ─────────────────────────────────────────
+function generatePDF() {
+  if (!lastSaveData) { showToast('⚠️ Tidak ada data untuk di-print'); return; }
 
-// ── RENDER GROSS ──────────────────────────────────────────
-function renderGross(players) {
-  const list = document.getElementById('grossList');
-  document.getElementById('grossCount').textContent = players.length + ' pemain';
+  const { tanggal, teeBox, tipeMain, players, holes, results, scores, dist } = lastSaveData;
 
-  if (!players.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏌️</div>Belum ada data score</div>`;
-    return;
-  }
+  // PAR row
+  const parRow = holes.map(n => `<td style="${tdStyle('color:#0e9aa7;font-weight:700;')}">${PAR[n]}</td>`).join('');
+  // OUT/IN total par
+  const front  = holes.filter(h => h <= 9);
+  const back   = holes.filter(h => h >= 10);
+  const parOut = front.reduce((s,n) => s+PAR[n], 0);
+  const parIn  = back.reduce((s,n) => s+PAR[n], 0);
+  const parTot = holes.reduce((s,n) => s+PAR[n], 0);
 
-  list.innerHTML = players.map((p, i) => {
-    const isTop5 = i < 5;
-    const rankClass = i < 3 ? `rank-${i+1}` : i < 5 ? `rank-${i+1}` : 'rank-other';
-    const medal = i < 5 ? MEDALS[i] : (i + 1).toString();
-    const anggota = anggotaMap[p.pemain + '|' + (p.gelar||'')] || anggotaMap[p.pemain + '|Mr.'] || anggotaMap[p.pemain + '|Mrs.'] || {};
-    const foto = anggota.foto || '';
-    const ou   = anggota.ou   || '';
-    const gelar = p.gelar || anggota.gelar || '';
-    const icon  = gelar === 'Mrs.' ? '👩' : '👨';
-
-    return `
-    <div class="rank-row ${rankClass}" id="grow_${i}">
-      <div class="rank-summary" onclick="toggleHoles('grow_${i}','gross',${i})">
-        <div class="rank-num">${i < 3 ? MEDALS[i] : i+1}</div>
-        ${foto
-          ? `<img class="player-photo" src="${escHtml(foto)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-             <div class="player-photo-placeholder" style="display:none;">${icon}</div>`
-          : `<div class="player-photo-placeholder">${icon}</div>`
-        }
-        <div class="player-info">
-          <div class="player-name">
-            <span class="player-gelar">${escHtml(gelar)}</span> ${escHtml(p.pemain)}
-            ${isTop5 ? '<span class="top5-badge">TOP 5</span>' : ''}
-          </div>
-          <div class="player-ou">${escHtml(ou)}</div>
-        </div>
-        <div class="score-group">
-          <div class="score-item score-gross"><div class="score-val">${p.gross}</div><div class="score-lbl">Gross</div></div>
-          <div class="score-item score-hcp"><div class="score-val">${p.hcp}</div><div class="score-lbl">HCP</div></div>
-          <div class="score-item score-nett"><div class="score-val">${p.nett}</div><div class="score-lbl">Nett</div></div>
-        </div>
-        ${isTop5 ? `<div class="expand-arr">▼</div>` : ''}
-      </div>
-      ${isTop5 ? `<div class="holes-detail" id="gholes_${i}"></div>` : ''}
-    </div>`;
+  // DIST row
+  const distRow = holes.map(n => {
+    const d = dist?.[n] || 0;
+    return `<td style="${tdStyle('color:#0e9aa7;font-size:9px;')}">${d ? d+'m' : '-'}</td>`;
   }).join('');
+
+  // Separator OUT/IN columns
+  const hasOut = front.length > 0;
+  const hasIn  = back.length > 0;
+  const hasBoth = hasOut && hasIn;
+
+  // OUT header
+  const outInHeaders = hasBoth
+    ? `<th style="${thStyle()}">Out</th><th style="${thStyle()}">In</th>`
+    : hasOut ? `<th style="${thStyle()}">Out</th>` : `<th style="${thStyle()}">In</th>`;
+
+  const outInPar = hasBoth
+    ? `<td style="${tdStyle('color:#0e9aa7;font-weight:700;')}">${parOut}</td><td style="${tdStyle('color:#0e9aa7;font-weight:700;')}">${parIn}</td>`
+    : `<td style="${tdStyle('color:#0e9aa7;font-weight:700;')}">${hasOut?parOut:parIn}</td>`;
+
+  const outInDist = hasBoth
+    ? `<td style="${tdStyle()}">-</td><td style="${tdStyle()}">-</td>`
+    : `<td style="${tdStyle()}">-</td>`;
+
+  // Player rows
+  let playerRows = '';
+  players.forEach((p, pi) => {
+    const sc  = scores.find(s => s.pemain === p.nama) || {};
+    const res = results.find(r => r.pemain === p.nama) || {};
+    let out = 0, inS = 0;
+
+    const holeCells = holes.map(n => {
+      const score = parseInt(sc['h'+n]) || 0;
+      const par   = PAR[n];
+      const diff  = score > 0 ? score - par : null;
+      const color = diff === null ? '#555'
+                  : diff <= -2 ? '#ff6b35'
+                  : diff === -1 ? '#e74c3c'
+                  : diff === 0 ? '#000'
+                  : diff === 1 ? '#777' : '#bbb';
+      if (score > 0) { if (n <= 9) out += score; else inS += score; }
+      return `<td style="${tdStyle('font-weight:700;font-size:12px;')}"><span style="color:${color};">${score > 0 ? score : '-'}</span></td>`;
+    }).join('');
+
+    const outInCells = hasBoth
+      ? `<td style="${tdStyle('font-weight:700;color:#555;')}">${out||'-'}</td><td style="${tdStyle('font-weight:700;color:#555;')}">${inS||'-'}</td>`
+      : `<td style="${tdStyle('font-weight:700;color:#555;')}">${hasOut?out:inS||'-'}</td>`;
+
+    const rowBg = pi % 2 === 0 ? '#ffffff' : '#f8f9fa';
+    playerRows += `<tr style="background:${rowBg};">
+      <td style="${tdStyle('text-align:center;font-weight:700;')}">${pi+1}</td>
+      <td style="${tdStyle('text-align:left;padding-left:8px;white-space:nowrap;min-width:120px;')}">${p.gelar} ${p.nama}</td>
+      ${holeCells}
+      ${outInCells}
+      <td style="${tdStyle('font-weight:700;color:#f5a623;font-size:12px;')}">${res.gross||'-'}</td>
+      <td style="${tdStyle('font-weight:700;color:#9b59b6;font-size:12px;')}">${res.hcp !== undefined ? res.hcp : '-'}</td>
+      <td style="${tdStyle('font-weight:700;color:#27ae60;font-size:12px;')}">${res.nett||'-'}</td>
+    </tr>`;
+  });
+
+  // Hole headers
+  const holeHeaders = holes.map(n => `<th style="${thStyle()}">${n}</th>`).join('');
+
+  const printHtml = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8">
+<title>PGC Scorecard - ${fmtDate(tanggal)}</title>
+<style>
+  *{box-sizing:border-box;}
+  body{font-family:Arial,sans-serif;padding:12px;color:#000;font-size:11px;}
+  @page{size:A4 landscape;margin:10mm;}
+  @media print{body{padding:0;}}
+  table{border-collapse:collapse;width:100%;}
+</style>
+</head><body>
+  <!-- Header -->
+  <div style="text-align:center;margin-bottom:10px;border-bottom:2px solid #0d1821;padding-bottom:8px;">
+    <div style="font-size:18px;font-weight:700;color:#0d1821;">⛳ PERLABIAN GOLF CLUB · PGC SCORECARDS 2026</div>
+    <div style="font-size:11px;color:#555;margin-top:3px;">
+      📅 ${fmtDate(tanggal)} &nbsp;·&nbsp; 🏌️ ${teeBox} &nbsp;·&nbsp; ${tipeMain === 'tournament' ? '🏆 Tournament' : '🏋️ Latihan'} &nbsp;·&nbsp; ${players.length} Pemain
+    </div>
+  </div>
+  <!-- Scorecard Table -->
+  <table>
+    <thead>
+      <!-- Row 1: Headers -->
+      <tr style="background:#0d1821;color:white;">
+        <th style="${thStyle('background:#0d1821;color:white;width:24px;')}">No</th>
+        <th style="${thStyle('background:#0d1821;color:white;text-align:left;padding-left:8px;min-width:120px;')}">Nama Golfer</th>
+        ${holeHeaders.replace(/style="[^"]*"/g, s => s.replace('background:#f0f0f0;color:#333;', 'background:#0d1821;color:white;'))}
+        ${outInHeaders.replace(/style="[^"]*"/g, s => s.replace('background:#f0f0f0;color:#333;', 'background:#0d1821;color:white;'))}
+        <th style="${thStyle('background:#0d1821;color:#f5a623;')}">Gross</th>
+        <th style="${thStyle('background:#0d1821;color:#9b59b6;')}">HCP</th>
+        <th style="${thStyle('background:#0d1821;color:#2ecc71;')}">Nett</th>
+      </tr>
+      <!-- Row 2: Par -->
+      <tr style="background:#e8f4f8;">
+        <td style="${tdStyle('text-align:center;font-weight:700;color:#0e9aa7;')}">Par</td>
+        <td style="${tdStyle('text-align:left;padding-left:8px;color:#0e9aa7;font-weight:700;')}">Par Lapangan</td>
+        ${parRow}
+        ${outInPar}
+        <td style="${tdStyle('font-weight:700;color:#f5a623;')}">${parTot}</td>
+        <td style="${tdStyle()}">-</td>
+        <td style="${tdStyle()}">-</td>
+      </tr>
+      <!-- Row 3: Distance -->
+      <tr style="background:#f0f8ff;">
+        <td style="${tdStyle('text-align:center;color:#0e9aa7;font-size:9px;')}">Jarak</td>
+        <td style="${tdStyle('text-align:left;padding-left:8px;color:#0e9aa7;font-size:9px;')}">Meter</td>
+        ${distRow}
+        ${outInDist}
+        <td style="${tdStyle()}">-</td>
+        <td style="${tdStyle()}">-</td>
+        <td style="${tdStyle()}">-</td>
+      </tr>
+    </thead>
+    <tbody>${playerRows}</tbody>
+  </table>
+  <div style="text-align:center;font-size:9px;color:#999;margin-top:10px;border-top:1px solid #eee;padding-top:6px;">
+    PGC Scorecards 2026 · pgc-scorecards.vercel.app · Dicetak: ${new Date().toLocaleString('id-ID')}
+  </div>
+</body></html>`;
+
+  const w = window.open('', '_blank', 'width=1000,height=700');
+  if (!w) { showToast('⚠️ Popup diblokir browser. Izinkan popup lalu coba lagi.', 4000); return; }
+  w.document.write(printHtml);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); }, 600);
 }
 
-// ── RENDER NETT ───────────────────────────────────────────
-function renderNett(players) {
-  const list = document.getElementById('nettList');
-  document.getElementById('nettCount').textContent = players.length + ' pemain';
-
-  if (!players.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div>Belum ada data score</div>`;
-    return;
-  }
-
-  list.innerHTML = players.map((p, i) => {
-    const isTop5 = i < 5;
-    const rankClass = i < 3 ? `rank-${i+1}` : i < 5 ? `rank-${i+1}` : 'rank-other';
-    const anggota = anggotaMap[p.pemain + '|' + (p.gelar||'')] || anggotaMap[p.pemain + '|Mr.'] || anggotaMap[p.pemain + '|Mrs.'] || {};
-    const foto  = anggota.foto  || '';
-    const ou    = anggota.ou    || '';
-    const gelar = p.gelar || anggota.gelar || '';
-    const icon  = gelar === 'Mrs.' ? '👩' : '👨';
-
-    return `
-    <div class="rank-row ${rankClass}" id="nrow_${i}">
-      <div class="rank-summary" onclick="toggleHoles('nrow_${i}','nett',${i})">
-        <div class="rank-num">${i < 3 ? MEDALS[i] : i+1}</div>
-        ${foto
-          ? `<img class="player-photo" src="${escHtml(foto)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-             <div class="player-photo-placeholder" style="display:none;">${icon}</div>`
-          : `<div class="player-photo-placeholder">${icon}</div>`
-        }
-        <div class="player-info">
-          <div class="player-name">
-            <span class="player-gelar">${escHtml(gelar)}</span> ${escHtml(p.pemain)}
-            ${isTop5 ? '<span class="top5-badge">TOP 5</span>' : ''}
-          </div>
-          <div class="player-ou">${escHtml(ou)}</div>
-        </div>
-        <div class="score-group">
-          <div class="score-item score-nett"><div class="score-val">${p.nett}</div><div class="score-lbl">Nett</div></div>
-          <div class="score-item score-hcp"><div class="score-val">${p.hcp}</div><div class="score-lbl">HCP</div></div>
-          <div class="score-item score-gross"><div class="score-val">${p.gross}</div><div class="score-lbl">Gross</div></div>
-        </div>
-        ${isTop5 ? `<div class="expand-arr">▼</div>` : ''}
-      </div>
-      ${isTop5 ? `<div class="holes-detail" id="nholes_${i}"></div>` : ''}
-    </div>`;
-  }).join('');
+// PDF helper styles
+function thStyle(extra) {
+  return `padding:4px 3px;border:1px solid #ccc;text-align:center;font-size:10px;background:#f0f0f0;color:#333;${extra||''}`;
+}
+function tdStyle(extra) {
+  return `padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:11px;${extra||''}`;
 }
 
-// ── TOGGLE HOLES ──────────────────────────────────────────
-const holesCache = {};
+// ── RECORD ───────────────────────────────────────────────
+async function loadRecord() {
+  const list = document.getElementById('recordList');
+  if (allRecords.length) { renderRecord(allRecords); return; }
 
-async function toggleHoles(rowId, type, rank) {
-  if (rank >= 5) return; // hanya top 5
-
-  const prefix  = type === 'gross' ? 'g' : 'n';
-  const detEl   = document.getElementById(prefix + 'holes_' + rank);
-  const rowEl   = document.getElementById(rowId);
-  const arrEl   = rowEl?.querySelector('.expand-arr');
-  if (!detEl) return;
-
-  const isOpen = detEl.classList.contains('open');
-  if (isOpen) {
-    detEl.classList.remove('open');
-    rowEl?.classList.remove('expanded');
-    return;
-  }
-
-  detEl.classList.add('open');
-  rowEl?.classList.add('expanded');
-
-  // Ambil nama pemain dari leaderboard
-  const listEl = document.getElementById(type === 'gross' ? 'grossList' : 'nettList');
-  const nameEl = listEl?.querySelectorAll('.player-name')[rank];
-  const fullText = nameEl?.textContent?.trim() || '';
-
-  // Cari di cache dulu
-  const cacheKey = prefix + '_' + rank + '_' + fullText;
-  if (holesCache[cacheKey]) {
-    detEl.innerHTML = holesCache[cacheKey];
-    return;
-  }
-
-  detEl.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text2);text-align:center;">⏳ Memuat...</div>';
-
-  // Cari anggota matching
-  let targetNama = '', targetGelar = '';
-  for (const [key, val] of Object.entries(anggotaMap)) {
-    const [n, g] = key.split('|');
-    // Match by nama yang ada di display
-    if (fullText.includes(n) && fullText.includes(g)) {
-      targetNama = n; targetGelar = g; break;
-    }
-  }
-
-  if (!targetNama) {
-    detEl.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text2);text-align:center;">Data tidak ditemukan</div>';
-    return;
-  }
+  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text2);">
+    <div class="spinner" style="margin:0 auto 12px;"></div>Memuat record...</div>`;
 
   try {
-    const key = encodeURIComponent(targetNama + '|' + targetGelar);
-    const res = await fetch(`${API_URL}?action=getPlayerStats&pemain=${key}`, { redirect:'follow' });
-    const result = await res.json();
+    const res  = await fetch(API_URL + '?action=getMasterData', { redirect:'follow' });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message);
 
-    const history = result.history || [];
-    // Ambil round terbaru
-    const latest  = history[0];
-    if (!latest || !latest.holes) {
-      detEl.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text2);text-align:center;">Belum ada detail hole</div>';
+    const anggota = data.anggota || [];
+    allRecords = anggota
+      .filter(a => a.Nama)
+      .map(a => ({
+        nama:        a.Nama,
+        gelar:       (a['Gelar'] || '').trim(),
+        ou:          a['Operating Unit'] || '',
+        hcp:         (a.Handicap !== undefined && a.Handicap !== '') ? a.Handicap : '-',
+        totalRounds: a.TotalRounds || 0,
+        lastUpdate:  fmtLastUpdate(a.LastUpdate)
+      }))
+      .sort((a,b) => {
+        if (a.gelar !== b.gelar) return a.gelar.localeCompare(b.gelar);
+        return a.nama.localeCompare(b.nama);
+      });
+
+    renderRecord(allRecords);
+  } catch(e) {
+    list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--red);">❌ Gagal memuat: ${escHtml(e.message)}</div>`;
+  }
+}
+
+function filterRecord() {
+  const q = document.getElementById('recordSearch').value.toLowerCase();
+  const filtered = allRecords.filter(r => r.nama.toLowerCase().includes(q));
+  renderRecord(filtered);
+}
+
+function renderRecord(records) {
+  const list = document.getElementById('recordList');
+  if (!records.length) {
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text2);">Tidak ditemukan</div>`;
+    return;
+  }
+
+  list.innerHTML = records.map((r, i) => {
+    const icon    = r.gelar === 'Mrs.' ? '👩' : '👨';
+    const hcpVal  = r.hcp !== '-' ? r.hcp : '-';
+    const rounds  = r.totalRounds || 0;
+    const lastUpd = r.lastUpdate || '-';
+    const ouBadge = r.ou ? `<span style="background:rgba(14,154,167,.12);border:1px solid var(--border);color:var(--teal2);font-size:10px;padding:2px 6px;border-radius:4px;">${escHtml(r.ou)}</span>` : '';
+    const key = encodeURIComponent(r.nama + '|' + r.gelar);
+
+    return `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;"
+      onclick="toggleDetail('det_${i}','${key}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">
+            ${icon} <span style="color:var(--text2);font-size:12px;">${escHtml(r.gelar)}</span> ${escHtml(r.nama)} ${ouBadge}
+          </div>
+          <div style="font-size:11px;color:var(--text2);">
+            ${rounds} round tournament
+            ${lastUpd !== '-' ? ' · Update: ' + lastUpd : ''}
+          </div>
+        </div>
+        <div style="text-align:center;margin-left:12px;">
+          <div style="font-size:22px;font-weight:700;color:var(--purple);">${hcpVal}</div>
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">HCP</div>
+        </div>
+        <div style="color:var(--text2);font-size:16px;margin-left:8px;" id="arr_det_${i}">▼</div>
+      </div>
+      <div id="det_${i}" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px;" onclick="event.stopPropagation()">
+        <div style="font-size:11px;color:var(--text2);text-align:center;padding:8px;">⏳ Memuat history...</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let openDetailId = '';
+async function toggleDetail(detId, key) {
+  const det = document.getElementById(detId);
+  const arr = document.getElementById('arr_' + detId);
+  if (!det) return;
+
+  if (det.style.display !== 'none') {
+    det.style.display = 'none';
+    if (arr) arr.textContent = '▼';
+    openDetailId = '';
+    return;
+  }
+
+  if (openDetailId) {
+    const prev = document.getElementById(openDetailId);
+    const parr = document.getElementById('arr_' + openDetailId);
+    if (prev) prev.style.display = 'none';
+    if (parr) parr.textContent = '▼';
+  }
+
+  det.style.display = 'block';
+  if (arr) arr.textContent = '▲';
+  openDetailId = detId;
+
+  if (!key) return;
+
+  try {
+    const res    = await fetch(`${API_URL}?action=getPlayerStats&pemain=${key}`, { redirect:'follow' });
+    const result = await res.json();
+    if (result.status !== 'ok') throw new Error(result.message);
+
+    const history  = result.history || [];
+    const detCheck = document.getElementById(detId);
+    if (!detCheck) return;
+
+    if (!history.length) {
+      detCheck.innerHTML = `<div style="font-size:12px;color:var(--text2);text-align:center;padding:8px;">Belum ada history tournament</div>`;
       return;
     }
 
-    const teeBox   = latest.teeBox || '';
-    const holesArr = teeBox === 'Biru'      ? [1,2,3,4,5,6,7,8,9]
-                   : teeBox === 'Putih'     ? [10,11,12,13,14,15,16,17,18]
-                   : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+    detCheck.innerHTML = history.map((h, hi) => {
+      const tipe    = h.type === 'tournament' ? '🏆' : '🏋️';
+      const gross   = h.gross      || '-';
+      const poin    = h.stableford || '-';
+      const hcp     = h.hcp !== undefined ? h.hcp : '-';
+      const nett    = h.nett       || '-';
+      const tgl     = h.tanggal ? h.tanggal.toString().split('T')[0] : '-';
+      const parts   = tgl.split('-');
+      const months  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const tglFmt  = parts.length === 3 ? `${parts[2]} ${months[parseInt(parts[1])-1]} ${parts[0]}` : tgl;
+      const teeBox  = h.teeBox || '';
+      const holesArr = teeBox === 'Biru'  ? [1,2,3,4,5,6,7,8,9]
+                     : teeBox === 'Putih' ? [10,11,12,13,14,15,16,17,18]
+                     : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
 
-    const cells = holesArr.map(n => {
-      const sc   = parseInt(latest.holes['h'+n]) || 0;
-      const par  = PAR_H[n];
-      const diff = sc > 0 ? sc - par : null;
-      const cls  = diff === null ? '' : diff <= -2 ? 'h-eagle' : diff === -1 ? 'h-birdie' : diff === 0 ? 'h-par' : diff === 1 ? 'h-bogey' : 'h-dbogey';
-      return `<div class="hole-cell">
-        <div class="hole-num">${n}</div>
-        <div class="hole-score ${cls}">${sc > 0 ? sc : '-'}</div>
-        <div class="hole-par">${par}</div>
+      const holeCells = holesArr.map(n => {
+        const sc   = parseInt(h.holes?.['h'+n]) || 0;
+        const par  = PAR[n];
+        const diff = sc > 0 ? sc - par : null;
+        const color = diff === null ? 'var(--text2)'
+                    : diff <= -2   ? '#FFAB91'
+                    : diff === -1  ? '#69F0AE'
+                    : diff === 0   ? '#40C4FF'
+                    : diff === 1   ? '#212121' : '#FF1744';
+        return `<div style="text-align:center;min-width:24px;">
+          <div style="font-size:9px;color:var(--text2);">${n}</div>
+          <div style="font-size:13px;font-weight:700;color:${color};">${sc > 0 ? sc : '-'}</div>
+          <div style="font-size:8px;color:var(--teal2);">${par}</div>
+        </div>`;
+      }).join('');
+
+      return `
+      <div style="border-bottom:1px solid var(--border);padding:8px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;"
+          onclick="event.stopPropagation();toggleHoles(this);" data-holes-id="holes_${detId}_${hi}">
+          <div>
+            <span style="color:var(--text2);">${tipe} ${tglFmt}</span>
+            <span style="color:var(--teal2);margin-left:6px;">${teeBox}</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;text-align:center;">
+            <div><div style="font-weight:700;color:var(--gold);font-size:13px;">${gross}</div><div style="font-size:9px;color:var(--text2);">Gross</div></div>
+            <div><div style="font-weight:700;color:var(--purple);font-size:13px;">${poin}</div><div style="font-size:9px;color:var(--text2);">Poin</div></div>
+            <div><div style="font-weight:700;color:var(--text2);font-size:13px;">${hcp}</div><div style="font-size:9px;color:var(--text2);">HCP</div></div>
+            <div><div style="font-weight:700;color:var(--green);font-size:13px;">${nett}</div><div style="font-size:9px;color:var(--text2);">Nett</div></div>
+            <div style="color:var(--text2);font-size:12px;" id="arr_holes_${detId}_${hi}">▼</div>
+          </div>
+        </div>
+        <div id="holes_${detId}_${hi}" style="display:none;margin-top:8px;overflow-x:auto;" onclick="event.stopPropagation()">
+          <div style="display:flex;gap:6px;padding:6px 0;">${holeCells}</div>
+          <div style="font-size:9px;color:var(--text2);margin-top:4px;">🟠Eagle+ 🔴Birdie ⚪Par 🔵Bogey ⚫Double+</div>
+        </div>
       </div>`;
-    }).join('');
-
-    const out = latest.out || '';
-    const ins = latest.ins || '';
-
-    const html = `
-      <div class="holes-grid">${cells}</div>
-      <div class="holes-sub">
-        ${out ? `<span>Out: <b>${out}</b></span>` : ''}
-        ${ins ? `<span>In: <b>${ins}</b></span>` : ''}
-        <span>Total: <b>${latest.gross}</b></span>
-        <span>Poin: <b>${latest.stableford}</b></span>
-        <span>HCP: <b>${latest.hcp}</b></span>
-        <span>Nett: <b>${latest.nett}</b></span>
-      </div>`;
-
-    holesCache[cacheKey] = html;
-    detEl.innerHTML = html;
+    }).join('') +
+    `<div style="font-size:11px;color:var(--text2);text-align:center;margin-top:8px;">${history.length} record tournament</div>`;
 
   } catch(e) {
-    detEl.innerHTML = `<div style="padding:10px;font-size:12px;color:var(--red);">❌ ${e.message}</div>`;
+    const detErr = document.getElementById(detId);
+    if (detErr) detErr.innerHTML = `<div style="font-size:12px;color:var(--red);padding:8px;">❌ ${escHtml(e.message)}</div>`;
   }
 }
 
-// ── HELPERS ───────────────────────────────────────────────
-function fmtDateStr(d) {
-  if (!d) return '';
-  const s = d.toString().split('T')[0];
-  const p = s.split('-');
-  if (p.length !== 3) return s;
-  const m = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  return `${p[2]} ${m[parseInt(p[1])-1]} ${p[0]}`;
+function toggleHoles(el) {
+  const id  = el.getAttribute('data-holes-id');
+  const box = document.getElementById(id);
+  const arr = document.getElementById('arr_' + id);
+  if (!box) return;
+  const isOpen = box.style.display !== 'none';
+  box.style.display  = isOpen ? 'none' : 'flex';
+  box.style.flexWrap = 'nowrap';
+  if (arr) arr.textContent = isOpen ? '▼' : '▲';
 }
 
-function fmtTime(iso) {
-  if (!iso) return '-';
-  const d = new Date(iso);
-  return d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+// ── HELPERS ──────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function resetApp() {
+  playerCount  = 0;
+  lastSaveData = null;
+  document.getElementById('playerList').innerHTML = '';
+  document.getElementById('addPlayerBtn').style.display = 'block';
+  document.getElementById('btnSave').disabled = false;
+  document.getElementById('btnSave').textContent = '💾 Simpan Score';
+  addPlayer();
+  showScreen('setup');
+}
+
+function range(a, b) {
+  const r = [];
+  for (let i = a; i <= b; i++) r.push(i);
+  return r;
+}
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function fmtLastUpdate(val) {
+  if (!val || val === 0 || val === '') return '-';
+  if (typeof val === 'number') {
+    const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+    if (isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+  }
+  return fmtDate(val.toString().split('T')[0]);
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const str   = d.toString();
+  const match = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return str;
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return `${parseInt(match[3])} ${months[parseInt(match[2])-1]} ${match[1]}`;
 }
 
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, dur) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, dur || 2500);
 }
 </script>
 </body>
