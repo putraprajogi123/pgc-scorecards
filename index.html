@@ -117,7 +117,7 @@ td.score-cell input:focus{outline:2px solid var(--teal);background:#0e2233;}
 td.score-cell input.eagle {color:#FFAB91;font-weight:900;}  /* Peach — Eagle+ */
 td.score-cell input.birdie{color:#69F0AE;}                  /* Hijau cerah — Birdie */
 td.score-cell input.par   {color:#40C4FF;}                  /* Biru cerah — Par */
-td.score-cell input.bogey {color:#212121;}                  /* Hitam — Bogey */
+td.score-cell input.bogey {color:#B0BEC5;}                  /* Abu terang — Bogey */
 td.score-cell input.dbogey{color:#FF1744;}                  /* Merah — Double Bogey+ */
 
 /* ── SUBTOTAL ROWS ────────────────────────────────────── */
@@ -327,6 +327,11 @@ function hideSplash() {
   s.style.transition = 'opacity .5s';
   s.style.opacity = '0';
   setTimeout(() => s.style.display = 'none', 500);
+  // Refresh player list setelah masuk — pastikan data sudah ada
+  playerCount = 0;
+  document.getElementById('playerList').innerHTML = '';
+  document.getElementById('addPlayerBtn').style.display = 'block';
+  addPlayer();
 }
 
 function splashReady() {
@@ -383,7 +388,6 @@ window.onload = async () => {
     const res = await fetch(API_URL + '?action=getMasterData', { redirect:'follow' });
     masterData = await res.json();
     if (masterData.status !== 'ok') throw new Error(masterData.message);
-    // Build distance map dari teeBox data
     window._dist = buildDistMap(masterData.teeBox || []);
     populateTournaments();
     document.getElementById('hdrBadge').textContent = masterData.anggota.length + ' anggota';
@@ -391,9 +395,10 @@ window.onload = async () => {
     showToast('⚠️ Gagal memuat data: ' + e.message, 4000);
     document.getElementById('hdrBadge').textContent = 'Offline';
   }
+  // addPlayer SETELAH data siap
   addPlayer();
   document.getElementById('loading').style.display = 'none';
-  splashReady(); // Tampilkan tombol Masuk setelah data siap
+  splashReady();
 };
 
 // ── DISTANCE MAP ─────────────────────────────────────────
