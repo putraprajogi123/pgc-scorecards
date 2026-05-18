@@ -797,10 +797,10 @@ function generatePDF() {
       const par   = PAR[n];
       const diff  = score > 0 ? score - par : null;
       const color = diff === null ? '#555'
-                  : diff <= -2 ? '#ff6b35'
-                  : diff === -1 ? '#e74c3c'
-                  : diff === 0 ? '#000'
-                  : diff === 1 ? '#777' : '#bbb';
+                  : diff <= -2 ? '#E64A19'
+                  : diff === -1 ? '#2E7D32'
+                  : diff === 0 ? '#0277BD'
+                  : diff === 1 ? '#546E7A' : '#B71C1C';
       if (score > 0) { if (n <= 9) out += score; else inS += score; }
       return `<td style="${tdStyle('font-weight:700;font-size:12px;')}"><span style="color:${color};">${score > 0 ? score : '-'}</span></td>`;
     }).join('');
