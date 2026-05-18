@@ -114,10 +114,11 @@ td.score-cell input{
 td.score-cell input::-webkit-inner-spin-button,
 td.score-cell input::-webkit-outer-spin-button{-webkit-appearance:none;}
 td.score-cell input:focus{outline:2px solid var(--teal);background:#0e2233;}
-td.score-cell input.eagle{color:#ff6b35;font-weight:900;}
-td.score-cell input.birdie{color:var(--red);}
-td.score-cell input.bogey{color:var(--text2);}
-td.score-cell input.dbogey{color:#4a6070;}
+td.score-cell input.eagle {color:#FFAB91;font-weight:900;}  /* Peach — Eagle+ */
+td.score-cell input.birdie{color:#69F0AE;}                  /* Hijau cerah — Birdie */
+td.score-cell input.par   {color:#40C4FF;}                  /* Biru cerah — Par */
+td.score-cell input.bogey {color:#212121;}                  /* Hitam — Bogey */
+td.score-cell input.dbogey{color:#FF1744;}                  /* Merah — Double Bogey+ */
 
 /* ── SUBTOTAL ROWS ────────────────────────────────────── */
 tr.row-sep td{height:3px;background:var(--border);padding:0;}
@@ -610,7 +611,7 @@ function recalc() {
         gross += val; poin += sf(val, PAR[h]);
         if (h <= 9) out += val; else inS += val;
         const d = val - PAR[h];
-        inp.className = d <= -2 ? 'eagle' : d === -1 ? 'birdie' : d > 1 ? 'dbogey' : d === 1 ? 'bogey' : '';
+        inp.className = d <= -2 ? 'eagle' : d === -1 ? 'birdie' : d === 0 ? 'par' : d === 1 ? 'bogey' : 'dbogey';
       } else {
         if (inp) inp.className = '';
       }
@@ -1035,10 +1036,10 @@ async function toggleDetail(detId, key) {
         const par  = PAR[n];
         const diff = sc > 0 ? sc - par : null;
         const color = diff === null ? 'var(--text2)'
-                    : diff <= -2   ? '#ff6b35'
-                    : diff === -1  ? 'var(--red)'
-                    : diff === 0   ? 'var(--text)'
-                    : diff === 1   ? 'var(--text2)' : '#4a6070';
+                    : diff <= -2   ? '#FFAB91'
+                    : diff === -1  ? '#69F0AE'
+                    : diff === 0   ? '#40C4FF'
+                    : diff === 1   ? '#212121' : '#FF1744';
         return `<div style="text-align:center;min-width:24px;">
           <div style="font-size:9px;color:var(--text2);">${n}</div>
           <div style="font-size:13px;font-weight:700;color:${color};">${sc > 0 ? sc : '-'}</div>
