@@ -186,19 +186,20 @@ body::before{
 }
 .holes-detail.open{display:block;}
 .holes-grid{
-  display:flex;gap:6px;flex-wrap:wrap;
+  display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;
 }
 .hole-cell{
   text-align:center;
-  min-width:32px;flex:1;
+  min-width:24px;
+  flex-shrink:0;
   background:var(--bg3);
-  border-radius:6px;
-  padding:4px 2px;
+  border-radius:4px;
+  padding:2px 1px;
   border:1px solid var(--border);
 }
-.hole-num{font-size:9px;color:var(--text2);font-weight:600;}
-.hole-score{font-size:16px;font-weight:700;line-height:1.2;}
-.hole-par{font-size:9px;color:var(--text2);}
+.hole-num{font-size:8px;color:var(--text2);font-weight:600;}
+.hole-score{font-size:13px;font-weight:700;line-height:1.2;}
+.hole-par{font-size:8px;color:var(--text2);}
 .h-eagle{color:#FFAB91;font-weight:900;} /* Peach — Eagle+ */
 .h-birdie{color:#69F0AE;}               /* Hijau cerah — Birdie */
 .h-par{color:#40C4FF;}                  /* Biru cerah — Par */
