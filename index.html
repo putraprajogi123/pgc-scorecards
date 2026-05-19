@@ -21,8 +21,14 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,sans-s
   position:fixed;inset:0;z-index:9998;
   background:linear-gradient(160deg,#030d14 0%,#071624 50%,#030d14 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:32px;text-align:center;
+  padding:0;
 }
+.slide-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.3);
+  transition:background .3s;cursor:pointer;
+}
+.slide-dot.active{background:var(--gold);}
 .splash-logo{
   width:90px;height:90px;
   background:linear-gradient(135deg,var(--teal),var(--teal2));
@@ -174,24 +180,29 @@ td.row-lbl{text-align:left;padding-left:8px!important;font-size:11px;color:var(-
 
 <!-- ── SPLASH SCREEN ────────────────────────────────────── -->
 <div id="splash">
-  <div class="splash-logo">⛳</div>
-  <div class="splash-club">Perlabian Golf Club · 2026</div>
-  <div class="splash-title">Selamat Datang</div>
-  <div class="splash-title" style="color:var(--teal2);font-size:24px;margin-bottom:12px;">Golfer PGC</div>
-  <div class="splash-quote">Selamat Bermain</div>
-  <div class="splash-quote2">⛳ Do Your Best ⛳</div>
-  <div id="splashLoading" style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px;">
-    <div class="spinner" style="border-top-color:var(--gold);"></div>
-    <div style="font-size:11px;color:var(--text2);letter-spacing:1px;">Memuat data...</div>
+  <!-- Slideshow background -->
+  <div id="slideshowBg" style="position:absolute;inset:0;z-index:0;overflow:hidden;">
+    <div id="slideshowImg" style="width:100%;height:100%;background-size:cover;background-position:center;transition:opacity 1s ease-in-out;opacity:0;"></div>
+    <div style="position:absolute;inset:0;background:rgba(3,13,20,.65);"></div>
   </div>
-  <button id="btnMasuk" class="splash-skip" style="display:none;background:var(--teal);color:#fff;border:none;padding:12px 32px;font-size:15px;font-weight:700;border-radius:10px;letter-spacing:2px;margin-top:16px;" onclick="hideSplash()">
-    MASUK ⛳
-  </button>
+  <!-- Content -->
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px;">
+    <div class="splash-logo">⛳</div>
+    <div class="splash-club">Perlabian Golf Club · 2026</div>
+    <div class="splash-title">Selamat Datang</div>
+    <div class="splash-title" style="color:var(--teal2);font-size:24px;margin-bottom:12px;">Golfer PGC</div>
+    <div class="splash-quote">Selamat Bermain</div>
+    <div class="splash-quote2">⛳ Do Your Best ⛳</div>
+    <div id="splashLoading" style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px;">
+      <div class="spinner" style="border-top-color:var(--gold);"></div>
+      <div style="font-size:11px;color:var(--text2);letter-spacing:1px;">Memuat data...</div>
+    </div>
+    <button id="btnMasuk" class="splash-skip" style="display:none;background:var(--teal);color:#fff;border:none;padding:12px 32px;font-size:15px;font-weight:700;border-radius:10px;letter-spacing:2px;margin-top:16px;" onclick="hideSplash()">
+      MASUK ⛳
+    </button>
+    <div id="slideshowDots" style="display:flex;gap:6px;margin-top:16px;"></div>
+  </div>
 </div>
-
-<div id="loading"><div class="spinner"></div><div>Memuat data PGC...</div></div>
-<div id="toast"></div>
-<div id="printArea" style="display:none;"></div>
 
 <!-- ── HEADER ─────────────────────────────────────────── -->
 <div class="hdr">
@@ -341,6 +352,52 @@ function splashReady() {
   if (btn) btn.style.display = 'block';
 }
 
+  // ── SLIDESHOW ────────────────────────────────────────────
+let slideIdx    = 0;
+let slideTimer  = null;
+let slidePhotos = [];
+
+function initSlideshow(photos) {
+  if (!photos || !photos.length) return;
+  slidePhotos = photos;
+
+  const dotsEl = document.getElementById('slideshowDots');
+  if (dotsEl) {
+    dotsEl.innerHTML = photos.map((_, i) =>
+      `<div class="slide-dot ${i===0?'active':''}" onclick="goSlide(${i})"></div>`
+    ).join('');
+  }
+
+  showSlide(0);
+  slideTimer = setInterval(() => {
+    slideIdx = (slideIdx + 1) % slidePhotos.length;
+    showSlide(slideIdx);
+  }, 5000);
+}
+
+function showSlide(idx) {
+  const img = document.getElementById('slideshowImg');
+  if (!img || !slidePhotos[idx]) return;
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.style.backgroundImage = `url('${slidePhotos[idx].url}')`;
+    img.style.opacity = '1';
+  }, 500);
+  document.querySelectorAll('.slide-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+  slideIdx = idx;
+}
+
+function goSlide(idx) {
+  clearInterval(slideTimer);
+  showSlide(idx);
+  slideTimer = setInterval(() => {
+    slideIdx = (slideIdx + 1) % slidePhotos.length;
+    showSlide(slideIdx);
+  }, 5000);
+}
+
 // ── TAB SWITCHING ────────────────────────────────────────
 function switchScTab(name) {
   ['input','record'].forEach(t => {
@@ -399,6 +456,10 @@ window.onload = async () => {
   addPlayer();
   document.getElementById('loading').style.display = 'none';
   splashReady();
+  // Init slideshow dari data API
+  if (masterData && masterData.slideshow && masterData.slideshow.length) {
+    initSlideshow(masterData.slideshow);
+  }
 };
 
 // ── DISTANCE MAP ─────────────────────────────────────────
