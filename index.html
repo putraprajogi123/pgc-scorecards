@@ -368,11 +368,24 @@ function initSlideshow(photos) {
     ).join('');
   }
 
-  showSlide(0);
-  slideTimer = setInterval(() => {
-    slideIdx = (slideIdx + 1) % slidePhotos.length;
-    showSlide(slideIdx);
-  }, 5000);
+  // Preload foto pertama dulu sebelum tampil
+  const preload = new Image();
+  preload.onload = function() {
+    showSlide(0);
+    slideTimer = setInterval(() => {
+      slideIdx = (slideIdx + 1) % slidePhotos.length;
+      showSlide(slideIdx);
+    }, 5000);
+  };
+  preload.onerror = function() {
+    // Kalau preload gagal, tetap coba tampilkan
+    showSlide(0);
+    slideTimer = setInterval(() => {
+      slideIdx = (slideIdx + 1) % slidePhotos.length;
+      showSlide(slideIdx);
+    }, 5000);
+  };
+  preload.src = photos[0].url;
 }
 
 function showSlide(idx) {
