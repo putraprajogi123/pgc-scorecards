@@ -657,7 +657,6 @@ function holeRow(n, players, dist) {
     r += `<td class="score-cell">
       <input type="number" id="s_${n}_${i}"
         min="1" max="20" inputmode="numeric"
-        placeholder="${PAR[n]}"
         oninput="recalc()"
         onfocus="this.select()">
     </td>`;
