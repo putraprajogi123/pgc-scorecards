@@ -1256,18 +1256,28 @@ async function loadChampions() {
 
     // Populate dropdown tournament
     const sel = document.getElementById('champTournament');
-    const tournaments = [...new Set([
-      ...(data.champions || []).map(c => c.TournamentName),
-      ...(data.specialAwards || []).map(s => s.TournamentName),
-      ...(data.tournamentPhotos || []).map(p => p.TournamentName)
-    ])].filter(Boolean);
+    // Kumpulkan tournament dengan tanggalnya
+const trnMap = {};
+(data.champions || []).forEach(c => {
+  if (c.TournamentName) trnMap[c.TournamentName] = c.Tanggal || '';
+});
+(data.specialAwards || []).forEach(s => {
+  if (s.TournamentName) trnMap[s.TournamentName] = trnMap[s.TournamentName] || s.Tanggal || '';
+});
+(data.tournamentPhotos || []).forEach(p => {
+  if (p.TournamentName) trnMap[p.TournamentName] = trnMap[p.TournamentName] || p.Tanggal || '';
+});
 
-    sel.innerHTML = '<option value="">-- Pilih Tournament --</option>';
-    tournaments.forEach(t => {
-      const o = document.createElement('option');
-      o.value = t; o.textContent = t;
-      sel.appendChild(o);
-    });
+const tournaments = Object.keys(trnMap).filter(Boolean);
+
+sel.innerHTML = '<option value="">-- Pilih Tournament --</option>';
+tournaments.forEach(t => {
+  const o = document.createElement('option');
+  o.value = t;
+  const tgl = trnMap[t] ? ' - ' + fmtDate(trnMap[t].toString().split('T')[0]) : '';
+  o.textContent = t + tgl;
+  sel.appendChild(o);
+});
 
     // Auto pilih tournament pertama
     if (tournaments.length) {
