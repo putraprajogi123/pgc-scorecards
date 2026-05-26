@@ -221,8 +221,9 @@ td.row-lbl{text-align:left;padding-left:8px!important;font-size:11px;color:var(-
 
 <!-- ── TABS ───────────────────────────────────────────── -->
 <div style="display:flex;background:#12202e;border-bottom:1px solid var(--border);">
-  <div id="tab-input"  class="sc-tab sc-tab-active" onclick="switchScTab('input')">⛳ Scorecard</div>
-  <div id="tab-record" class="sc-tab"               onclick="switchScTab('record')">📋 Record</div>
+  <div id="tab-input"    class="sc-tab sc-tab-active" onclick="switchScTab('input')">⛳ Scorecard</div>
+  <div id="tab-record"   class="sc-tab"               onclick="switchScTab('record')">📋 Record</div>
+  <div id="tab-champions" class="sc-tab"              onclick="switchScTab('champions')">🏆 Champions</div>
 </div>
 
 <!-- ── SCREEN: SETUP ──────────────────────────────────── -->
@@ -303,7 +304,21 @@ td.row-lbl{text-align:left;padding-left:8px!important;font-size:11px;color:var(-
     <button class="btn btn-primary" onclick="resetApp()">🔄 Scorecard Baru</button>
   </div>
 </div>
-
+  <!-- ── SCREEN: CHAMPIONS ─────────────────────────────── -->
+<div id="screen-champions" class="screen">
+  <div style="position:relative;margin-bottom:12px;">
+    <select id="champTournament" onchange="filterChampions()"
+      style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;">
+      <option value="">-- Pilih Tournament --</option>
+    </select>
+  </div>
+  <div id="championsList">
+    <div style="text-align:center;padding:32px;color:var(--text2);font-size:13px;">
+      <div style="font-size:36px;margin-bottom:12px;">🏆</div>
+      Memuat data champions...
+    </div>
+  </div>
+</div>
 <!-- ── SCREEN: RECORD ─────────────────────────────────── -->
 <div id="screen-record" class="screen">
   <div style="position:relative;margin-bottom:12px;">
@@ -416,29 +431,30 @@ function goSlide(idx) {
 
 // ── TAB SWITCHING ────────────────────────────────────────
 function switchScTab(name) {
-  ['input','record'].forEach(t => {
+  ['input','record','champions'].forEach(t => {
     document.getElementById('tab-' + t)?.classList.remove('sc-tab-active');
   });
   document.getElementById('tab-' + name)?.classList.add('sc-tab-active');
 
+  // Sembunyikan semua screen
+  ['setup','scorecard','summary','success'].forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('screen-record').style.display = 'none';
+  document.getElementById('screen-champions').style.display = 'none';
+
   if (name === 'input') {
-    document.getElementById('screen-record').style.display = 'none';
-    // Show setup screen
-    ['setup','scorecard','summary','success'].forEach(s => {
-      const el = document.getElementById('screen-' + s);
-      if (el) el.style.display = 'none';
-    });
     const setupEl = document.getElementById('screen-setup');
     if (setupEl) { setupEl.style.display = 'block'; setupEl.classList.add('active'); }
-  } else {
-    ['setup','scorecard','summary','success'].forEach(s => {
-      const el = document.getElementById('screen-' + s);
-      if (el) el.style.display = 'none';
-    });
+  } else if (name === 'record') {
     document.getElementById('screen-record').style.display = 'block';
     allRecords  = [];
     openDetailId = '';
     loadRecord();
+  } else if (name === 'champions') {
+    document.getElementById('screen-champions').style.display = 'block';
+    loadChampions();
   }
 }
 
@@ -1222,6 +1238,195 @@ function fmtDate(d) {
 
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── CHAMPIONS ────────────────────────────────────────────
+let championsData = null;
+
+async function loadChampions() {
+  const list = document.getElementById('championsList');
+  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text2);">
+    <div class="spinner" style="margin:0 auto 12px;"></div>Memuat data...</div>`;
+
+  try {
+    const res  = await fetch(API_URL + '?action=getChampionsData', { redirect:'follow' });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message);
+    championsData = data;
+
+    // Populate dropdown tournament
+    const sel = document.getElementById('champTournament');
+    const tournaments = [...new Set([
+      ...(data.champions || []).map(c => c.TournamentName),
+      ...(data.specialAwards || []).map(s => s.TournamentName),
+      ...(data.tournamentPhotos || []).map(p => p.TournamentName)
+    ])].filter(Boolean);
+
+    sel.innerHTML = '<option value="">-- Pilih Tournament --</option>';
+    tournaments.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t; o.textContent = t;
+      sel.appendChild(o);
+    });
+
+    // Auto pilih tournament pertama
+    if (tournaments.length) {
+      sel.value = tournaments[0];
+      renderChampions(tournaments[0]);
+    } else {
+      renderChampionsEmpty();
+    }
+
+  } catch(e) {
+    list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--red);">❌ Gagal memuat: ${escHtml(e.message)}</div>`;
+  }
+}
+
+function filterChampions() {
+  const trn = document.getElementById('champTournament').value;
+  if (trn) renderChampions(trn);
+  else renderChampionsEmpty();
+}
+
+function renderChampionsEmpty() {
+  document.getElementById('championsList').innerHTML = `
+    <div style="text-align:center;padding:32px;color:var(--text2);">
+      <div style="font-size:36px;margin-bottom:12px;">🏆</div>
+      Pilih tournament untuk melihat data
+    </div>`;
+}
+
+const MEDALS = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+
+function renderChampions(trnName) {
+  if (!championsData) return;
+  const list = document.getElementById('championsList');
+
+  // Data champions untuk tournament ini
+  const champ = (championsData.champions || []).find(c => c.TournamentName === trnName) || {};
+  const awards = (championsData.specialAwards || []).filter(s => s.TournamentName === trnName);
+  const photos = (championsData.tournamentPhotos || [])
+    .filter(p => p.TournamentName === trnName)
+    .sort((a,b) => (a.Urutan||0) - (b.Urutan||0));
+  const hoi = (championsData.holeInOne || []);
+
+  let html = '';
+
+  // ── GROSS CHAMPION ──────────────────────────────────────
+  html += `<div class="sec-title">🏆 Gross Champion</div>`;
+  html += `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;">`;
+  let hasGross = false;
+  for (let i = 1; i <= 5; i++) {
+    const nama  = champ['Gross'+i+'Nama'];
+    const gelar = champ['Gross'+i+'Gelar'];
+    const score = champ['Gross'+i+'Score'];
+    if (!nama) continue;
+    hasGross = true;
+    const icon = (gelar||'') === 'Mrs.' ? '👩' : '👨';
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:18px;">${MEDALS[i-1]}</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">${icon} ${escHtml(gelar||'')} ${escHtml(nama)}</div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:18px;font-weight:700;color:var(--gold);">${score||'-'}</div>
+        <div style="font-size:9px;color:var(--text2);">Gross</div>
+      </div>
+    </div>`;
+  }
+  if (!hasGross) html += `<div style="text-align:center;padding:12px;color:var(--text2);font-size:12px;">Belum ada data</div>`;
+  html += `</div>`;
+
+  // ── NETT CHAMPION ───────────────────────────────────────
+  html += `<div class="sec-title">🎯 Nett Champion</div>`;
+  html += `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;">`;
+  let hasNett = false;
+  for (let i = 1; i <= 5; i++) {
+    const nama  = champ['Nett'+i+'Nama'];
+    const gelar = champ['Nett'+i+'Gelar'];
+    const score = champ['Nett'+i+'Score'];
+    if (!nama) continue;
+    hasNett = true;
+    const icon = (gelar||'') === 'Mrs.' ? '👩' : '👨';
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:18px;">${MEDALS[i-1]}</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">${icon} ${escHtml(gelar||'')} ${escHtml(nama)}</div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:18px;font-weight:700;color:var(--green);">${score||'-'}</div>
+        <div style="font-size:9px;color:var(--text2);">Nett</div>
+      </div>
+    </div>`;
+  }
+  if (!hasNett) html += `<div style="text-align:center;padding:12px;color:var(--text2);font-size:12px;">Belum ada data</div>`;
+  html += `</div>`;
+
+  // ── SPECIAL AWARDS ──────────────────────────────────────
+  const awardCategories = [
+    { key: 'NearestPin',   label: '📍 Nearest to Pin' },
+    { key: 'NearestLine',  label: '📏 Nearest to Line' },
+    { key: 'LongestDrive', label: '🏌️ Longest Drive' },
+    { key: 'BestBirdie',   label: '🐦 Best Birdie' }
+  ];
+
+  awardCategories.forEach(cat => {
+    const catAwards = awards.filter(a => a.Kategori === cat.key)
+      .sort((a,b) => (a.Posisi||0) - (b.Posisi||0));
+    if (!catAwards.length) return;
+    html += `<div class="sec-title">${cat.label}</div>`;
+    html += `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;">`;
+    catAwards.forEach(a => {
+      const icon = (a.Gelar||'') === 'Mrs.' ? '👩' : '👨';
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:16px;">${MEDALS[(a.Posisi||1)-1]||a.Posisi}</span>
+          <div style="font-size:12px;font-weight:700;color:var(--text);">${icon} ${escHtml(a.Gelar||'')} ${escHtml(a.Nama||'')}</div>
+        </div>
+        <div style="font-size:11px;color:var(--teal2);">${escHtml(a.Info||'')}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  // ── FOTO TOURNAMENT ─────────────────────────────────────
+  if (photos.length) {
+    html += `<div class="sec-title">📸 Foto Tournament</div>`;
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">`;
+    photos.forEach(p => {
+      html += `<div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);">
+        <img src="${escHtml(p.URL||'')}" style="width:100%;height:90px;object-fit:cover;"
+          onerror="this.parentElement.style.display='none'">
+        ${p.NamaFoto ? `<div style="font-size:10px;color:var(--text2);padding:4px 6px;">${escHtml(p.NamaFoto)}</div>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // ── HOLE IN ONE ─────────────────────────────────────────
+  if (hoi.length) {
+    html += `<div class="sec-title">⛳ Hole in One</div>`;
+    hoi.forEach(h => {
+      const icon = (h.Gelar||'') === 'Mrs.' ? '👩' : '👨';
+      const tgl  = h.Tanggal ? h.Tanggal.toString().split('T')[0] : '';
+      const parts = tgl.split('-');
+      const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const tglFmt = parts.length===3 ? `${parts[2]} ${months[parseInt(parts[1])-1]} ${parts[0]}` : tgl;
+      html += `<div style="background:var(--bg2);border:1px solid var(--gold);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);">${icon} ${escHtml(h.Gelar||'')} ${escHtml(h.Nama||'')}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px;">${tglFmt} · Hole ${h.Hole||'-'} · ${h.Jarak||'-'}m · ${h.TeeBox||'-'}</div>
+        </div>
+        ${h.Foto ? `<img src="${escHtml(h.Foto)}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'">` : '<span style="font-size:32px;">⛳</span>'}
+      </div>`;
+    });
+  }
+
+  list.innerHTML = html || `<div style="text-align:center;padding:32px;color:var(--text2);">Belum ada data untuk tournament ini</div>`;
 }
 
 function showToast(msg, dur) {
