@@ -1803,38 +1803,6 @@ function printByDate() {
   setTimeout(() => { w.print(); }, 600);
 }
 
-  const flightTables = flights.map((f, i) => renderFlightTable(f, i)).join('');
-
-  const printHtml = `<!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8">
-<title>PGC Scorecard - ${fmtDate(tanggal)}</title>
-<style>
-  *{box-sizing:border-box;}
-  body{font-family:Arial,sans-serif;padding:12px;color:#000;font-size:11px;}
-  @page{size:A4 landscape;margin:10mm;}
-  @media print{body{padding:0;}}
-  table{border-collapse:collapse;width:100%;}
-</style>
-</head><body>
-  <div style="text-align:center;margin-bottom:12px;border-bottom:2px solid #0d1821;padding-bottom:8px;">
-    <div style="font-size:18px;font-weight:700;color:#0d1821;">⛳ PERLABIAN GOLF CLUB · PGC SCORECARDS 2026</div>
-    <div style="font-size:12px;color:#555;margin-top:3px;">
-      📅 ${fmtDate(tanggal)} &nbsp;·&nbsp; 🚩 ${flights.length} Flight &nbsp;·&nbsp; 👥 ${totalPemain} Pemain
-    </div>
-  </div>
-  ${flightTables}
-  <div style="text-align:center;font-size:9px;color:#999;margin-top:10px;border-top:1px solid #eee;padding-top:6px;">
-    PGC Scorecards 2026 · pgc-scorecards.vercel.app · Dicetak: ${new Date().toLocaleString('id-ID')}
-  </div>
-</body></html>`;
-
-  const w = window.open('', '_blank', 'width=1000,height=700');
-  if (!w) { showToast('⚠️ Popup diblokir browser. Izinkan popup lalu coba lagi.', 4000); return; }
-  w.document.write(printHtml);
-  w.document.close();
-  w.focus();
-  setTimeout(() => { w.print(); }, 600);
-}
 function showToast(msg, dur) {
   const t = document.getElementById('toast');
   t.textContent = msg;
