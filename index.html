@@ -807,15 +807,15 @@ function buildTable(players) {
     const namaDisplay = p.gelar ? `${p.gelar} ${p.nama}` : p.nama;
     h += `<th class="th-player">${escHtml(namaDisplay)}</th>`;
   });
-    h += `</tr></thead><tbody>`;
+    h += `</tr>`;
 
-    // ── RINGKASAN DI ATAS (Nett, HCP, Poin, Total) ──
+  // ── RINGKASAN IKUT DIBEKUKAN (dalam thead: Nett, HCP, Poin, Total) ──
   h += statRow('row-nett',  'Nett',  '—', players, 'nett');
   h += statRow('row-hcp',   'HCP',   '—', players, 'hcp');
   h += statRow('row-poin',  'Poin',  '—', players, 'poin');
   h += statRow('row-total', 'Total', holes.reduce((s,n) => s+PAR[n],0), players, 'total');
 
-  h += `<tr class="row-sep"><td colspan="${2 + players.length}"></td></tr>`;
+  h += `</thead><tbody>`;
 
   // ── FRONT 9: hole 1-9, lalu Out di bawah ──
   if (front.length) {
