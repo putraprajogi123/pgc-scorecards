@@ -809,7 +809,7 @@ function buildTable(players) {
   });
     h += `</tr></thead><tbody>`;
 
-  // ── RINGKASAN DI ATAS (Nett, HCP, Poin, Total) ──
+    // ── RINGKASAN DI ATAS (Nett, HCP, Poin, Total) ──
   h += statRow('row-nett',  'Nett',  '—', players, 'nett');
   h += statRow('row-hcp',   'HCP',   '—', players, 'hcp');
   h += statRow('row-poin',  'Poin',  '—', players, 'poin');
@@ -817,19 +817,19 @@ function buildTable(players) {
 
   h += `<tr class="row-sep"><td colspan="${2 + players.length}"></td></tr>`;
 
-  // ── FRONT 9: Out di atas, lalu hole 1-9 ──
+  // ── FRONT 9: hole 1-9, lalu Out di bawah ──
   if (front.length) {
+    front.forEach(n => { h += holeRow(n, players, dist); });
     const pOut = front.reduce((s,n) => s + PAR[n], 0);
     h += statRow('row-out', 'Out', pOut, players, 'out');
-    front.forEach(n => { h += holeRow(n, players, dist); });
   }
 
-  // ── BACK 9: In di atas, lalu hole 10-18 ──
+  // ── BACK 9: hole 10-18, lalu In di bawah ──
   if (back.length) {
     if (front.length) h += `<tr class="row-sep"><td colspan="${2 + players.length}"></td></tr>`;
+    back.forEach(n => { h += holeRow(n, players, dist); });
     const pIn = back.reduce((s,n) => s + PAR[n], 0);
     h += statRow('row-in', 'In', pIn, players, 'in');
-    back.forEach(n => { h += holeRow(n, players, dist); });
   }
 
   h += `</tbody>`;
