@@ -803,9 +803,9 @@ function buildTable(players) {
   let h = `<thead><tr>
     <th style="width:36px;">Hole<br><span style="font-size:8px;color:var(--teal2);font-weight:400;">meter</span></th>
     <th style="width:28px;color:var(--teal);">Par</th>`;
-  players.forEach(p => {
-    const namaDisplay = p.gelar ? `${p.gelar} ${p.nama.split(' ')[0]}` : p.nama.split(' ')[0];
-    h += `<th class="th-player">${namaDisplay}</th>`;
+    players.forEach(p => {
+    const namaDisplay = p.gelar ? `${p.gelar} ${p.nama}` : p.nama;
+    h += `<th class="th-player">${escHtml(namaDisplay)}</th>`;
   });
     h += `</tr></thead><tbody>`;
 
