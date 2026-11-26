@@ -327,9 +327,9 @@ td.row-lbl{text-align:left;padding-left:8px!important;font-size:11px;color:var(-
 </div>
 
 <!-- ── OVERLAY: SHARE / SCREENSHOT (vertikal, muat 1 layar) ── -->
-<div id="shareOverlay" style="display:none;position:fixed;inset:0;z-index:9997;background:#03080e;">
+<div id="shareOverlay" style="display:none;position:fixed;inset:0;z-index:9997;background:#f3f0e9;">
   <div id="shareContent" style="width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;"></div>
-  <button onclick="closeShareView()" style="position:fixed;top:8px;right:8px;z-index:9998;background:rgba(18,32,46,.9);color:#e8f4f8;border:1px solid #1f3347;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">✕ Tutup</button>
+  <button onclick="closeShareView()" style="position:fixed;top:8px;right:8px;z-index:9998;background:rgba(26,45,62,.92);color:#f5d98a;border:1px solid #243f56;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">✕ Tutup</button>
 </div>
   <!-- ── SCREEN: CHAMPIONS ─────────────────────────────── -->
 <div id="screen-champions" class="screen">
@@ -1072,14 +1072,14 @@ function showShareView() {
   const nBarisRingkas = (hasBoth ? 2 : 1) + 4; // Out & In (atau salah satu) + Total,Poin,HCP,Nett
   const totalBaris = 1 /*par-header*/ + nBarisHole + nBarisRingkas;
 
-  // Warna skor
+  // Warna skor (versi terang — kontras di background krem/putih)
   function colr(v, par) {
-    if (!v) return '#555';
+    if (!v) return '#9a9284';
     const d = v - par;
-    return d <= -2 ? '#FFAB91' : d === -1 ? '#69F0AE' : d === 0 ? '#40C4FF' : d === 1 ? '#ECEFF1' : '#FF1744';
+    return d <= -2 ? '#C2410C' : d === -1 ? '#2E7D32' : d === 0 ? '#1565C0' : d === 1 ? '#607D8B' : '#B71C1C';
   }
 
-  const bd = '0.5px solid #1f3347';
+  const bd = '0.5px solid #e0daca';
 
   // Baris hole
   let holeRows = holes.map(n => {
@@ -1088,8 +1088,8 @@ function showShareView() {
       return `<td style="border:${bd};text-align:center;color:${colr(v, PAR[n])};font-weight:700;">${v>0?v:'-'}</td>`;
     }).join('');
     return `<tr>
-      <td style="border:${bd};text-align:center;color:#e8f4f8;font-weight:700;">${n}</td>
-      <td style="border:${bd};text-align:center;color:#0e9aa7;">${PAR[n]}</td>
+      <td style="border:${bd};text-align:center;color:#2c2c2a;font-weight:700;">${n}</td>
+      <td style="border:${bd};text-align:center;color:#b8860b;">${PAR[n]}</td>
       ${cells}</tr>`;
   }).join('');
 
@@ -1097,27 +1097,27 @@ function showShareView() {
   let outRow = '';
   if (front.length) {
     const pOut = front.reduce((s,n)=>s+PAR[n],0);
-    const cells = pdata.map(pd => `<td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">${pd.out||'-'}</td>`).join('');
-    outRow = `<tr style="background:#0e1f2e;"><td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">Out</td><td style="border:${bd};text-align:center;color:#0e9aa7;">${pOut}</td>${cells}</tr>`;
+    const cells = pdata.map(pd => `<td style="border:${bd};text-align:center;color:#0c7a85;font-weight:700;">${pd.out||'-'}</td>`).join('');
+    outRow = `<tr style="background:#e8f1f2;"><td style="border:${bd};text-align:center;color:#0c7a85;font-weight:700;">Out</td><td style="border:${bd};text-align:center;color:#b8860b;">${pOut}</td>${cells}</tr>`;
   }
   // Baris In (kalau ada back)
   let inRow = '';
   if (back.length) {
     const pIn = back.reduce((s,n)=>s+PAR[n],0);
-    const cells = pdata.map(pd => `<td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">${pd.inS||'-'}</td>`).join('');
-    inRow = `<tr style="background:#0e1f2e;"><td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">In</td><td style="border:${bd};text-align:center;color:#0e9aa7;">${pIn}</td>${cells}</tr>`;
+    const cells = pdata.map(pd => `<td style="border:${bd};text-align:center;color:#0c7a85;font-weight:700;">${pd.inS||'-'}</td>`).join('');
+    inRow = `<tr style="background:#e8f1f2;"><td style="border:${bd};text-align:center;color:#0c7a85;font-weight:700;">In</td><td style="border:${bd};text-align:center;color:#b8860b;">${pIn}</td>${cells}</tr>`;
   }
 
   const parTot = holes.reduce((s,n)=>s+PAR[n],0);
-  const totalRow = `<tr style="background:#0d1f1a;"><td style="border:${bd};text-align:center;color:#f5a623;font-weight:700;">Total</td><td style="border:${bd};text-align:center;color:#0e9aa7;">${parTot}</td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#f5a623;font-weight:700;">${pd.gross}</td>`).join('')}</tr>`;
-  const poinRow  = `<tr><td style="border:${bd};text-align:center;color:#9b59b6;">Poin</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#9b59b6;">${pd.poin}</td>`).join('')}</tr>`;
-  const hcpRow   = `<tr><td style="border:${bd};text-align:center;color:#7fa8bc;">HCP</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#e8f4f8;">${pd.hcp}</td>`).join('')}</tr>`;
-  const nettRow  = `<tr style="background:#0d1f19;"><td style="border:${bd};text-align:center;color:#2ecc71;font-weight:700;">Nett</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#2ecc71;font-weight:700;">${pd.nett}</td>`).join('')}</tr>`;
+  const totalRow = `<tr style="background:#faf3e2;"><td style="border:${bd};text-align:center;color:#a66c00;font-weight:700;">Total</td><td style="border:${bd};text-align:center;color:#b8860b;">${parTot}</td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#a66c00;font-weight:700;">${pd.gross}</td>`).join('')}</tr>`;
+  const poinRow  = `<tr><td style="border:${bd};text-align:center;color:#7b4ca3;">Poin</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#7b4ca3;">${pd.poin}</td>`).join('')}</tr>`;
+  const hcpRow   = `<tr><td style="border:${bd};text-align:center;color:#5a7183;">HCP</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#2c2c2a;">${pd.hcp}</td>`).join('')}</tr>`;
+  const nettRow  = `<tr style="background:#e6efe3;"><td style="border:${bd};text-align:center;color:#1b7a3d;font-weight:700;">Nett</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#1b7a3d;font-weight:700;">${pd.nett}</td>`).join('')}</tr>`;
 
   // Header kolom pemain
   const nameHdr = pdata.map(pd => {
     const full = (pd.gelar?pd.gelar+' ':'') + pd.nama;
-    return `<th style="border:${bd};text-align:center;color:#e8f4f8;padding:2px 1px;line-height:1.1;word-break:break-word;">${escHtml(full)}</th>`;
+    return `<th style="border:${bd};text-align:center;color:#2c2c2a;padding:2px 1px;line-height:1.1;word-break:break-word;">${escHtml(full)}</th>`;
   }).join('');
 
   const teeLabel = teeBox === 'Biru' ? 'Biru · Hole 1–9'
@@ -1125,16 +1125,16 @@ function showShareView() {
                  : 'BiruPutih · 18 Hole';
 
   const html = `
-    <div style="flex:0 0 auto;background:linear-gradient(135deg,#0d1821,#0e2233);border-bottom:2px solid #0e9aa7;padding:8px 10px;text-align:center;">
-      <div style="font-size:15px;font-weight:700;color:#3ecad6;">⛳ Perlabian Golf Club</div>
-      <div style="font-size:10px;color:#7fa8bc;margin-top:2px;">📅 ${fmtDate(tanggal)} &nbsp;·&nbsp; 🏌️ ${teeLabel} &nbsp;·&nbsp; 👥 ${nCol} pemain</div>
+    <div style="flex:0 0 auto;background:linear-gradient(135deg,#1a2d3e,#243f56);padding:8px 10px;text-align:center;">
+      <div style="font-size:15px;font-weight:700;color:#f5d98a;">⛳ Perlabian Golf Club</div>
+      <div style="font-size:10px;color:#c3d2dd;margin-top:2px;">📅 ${fmtDate(tanggal)} &nbsp;·&nbsp; 🏌️ ${teeLabel} &nbsp;·&nbsp; 👥 ${nCol} pemain</div>
     </div>
-    <div style="flex:1 1 auto;min-height:0;padding:4px;">
+    <div style="flex:1 1 auto;min-height:0;padding:4px;background:#fdfcf9;">
       <table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed;font-size:clamp(8px,2.6vw,13px);">
         <thead>
-          <tr style="background:#12202e;">
-            <th style="border:${bd};color:#7fa8bc;width:13%;">Hole</th>
-            <th style="border:${bd};color:#0e9aa7;width:11%;">Par</th>
+          <tr style="background:#ece6d8;">
+            <th style="border:${bd};color:#6b6350;width:13%;">Hole</th>
+            <th style="border:${bd};color:#b8860b;width:11%;">Par</th>
             ${nameHdr}
           </tr>
         </thead>
@@ -1149,7 +1149,7 @@ function showShareView() {
         </tbody>
       </table>
     </div>
-    <div style="flex:0 0 auto;padding:4px 10px;font-size:9px;color:#7fa8bc;text-align:center;border-top:0.5px solid #1f3347;">
+    <div style="flex:0 0 auto;padding:4px 10px;font-size:9px;color:#6b6350;text-align:center;border-top:0.5px solid #e0daca;background:#f3f0e9;">
       PGC Scorecards 2026 · Nett = Gross − Handicap
     </div>`;
 
