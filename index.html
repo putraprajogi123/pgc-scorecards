@@ -326,12 +326,10 @@ td.row-lbl{text-align:left;padding-left:8px!important;font-size:11px;color:var(-
   </div>
 </div>
 
-<!-- ── OVERLAY: SHARE / SCREENSHOT ─────────────────────── -->
-<div id="shareOverlay" style="display:none;position:fixed;inset:0;z-index:9997;background:rgba(3,8,14,.92);overflow:auto;padding:16px 10px 90px;">
-  <div id="shareContent"></div>
-  <div style="position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;">
-    <button class="btn btn-outline" style="margin:0;" onclick="closeShareView()">✕ Tutup</button>
-  </div>
+<!-- ── OVERLAY: SHARE / SCREENSHOT (vertikal, muat 1 layar) ── -->
+<div id="shareOverlay" style="display:none;position:fixed;inset:0;z-index:9997;background:#03080e;">
+  <div id="shareContent" style="width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;"></div>
+  <button onclick="closeShareView()" style="position:fixed;top:8px;right:8px;z-index:9998;background:rgba(18,32,46,.9);color:#e8f4f8;border:1px solid #1f3347;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;">✕ Tutup</button>
 </div>
   <!-- ── SCREEN: CHAMPIONS ─────────────────────────────── -->
 <div id="screen-champions" class="screen">
@@ -1036,126 +1034,127 @@ async function saveScore() {
 }
 
 // ── GENERATE PDF ─────────────────────────────────────────
-// ── SHARE VIEW (tampilan ringkas untuk screenshot) ──────
+// ── SHARE VIEW (Opsi B: vertikal, hole=baris, dipaksa muat 1 layar) ──
 function showShareView() {
   if (!lastSaveData) { showToast('⚠️ Tidak ada data untuk ditampilkan'); return; }
   const { tanggal, teeBox, players, holes, results, scores } = lastSaveData;
 
-  // Peta hasil backend by nama|gelar → {gross, hcp, nett}
+  // Peta hasil backend by nama|gelar
   const resMap = {};
-  (results || []).forEach(r => {
-    resMap[(r.pemain || '') + '|' + (r.gelar || '')] = r;
-  });
+  (results || []).forEach(r => { resMap[(r.pemain||'')+'|'+(r.gelar||'')] = r; });
 
   const front = holes.filter(h => h <= 9);
   const back  = holes.filter(h => h >= 10);
   const hasBoth = front.length && back.length;
-  const parTot = holes.reduce((s,n) => s + PAR[n], 0);
 
-  // Lebar font menyesuaikan jumlah hole (18 hole lebih rapat)
-  const cellFs = holes.length > 9 ? '8px' : '10px';
-  const cellPad = holes.length > 9 ? '3px 1px' : '4px 2px';
-
-  const bd = '0.5px solid #1f3347';
-  const thS = `padding:${cellPad};border:${bd};color:#7fa8bc;font-size:${cellFs};`;
-  const tdS = `padding:${cellPad};border:${bd};font-size:${cellFs};text-align:center;`;
-
-  // Header kolom hole
-  let holeHdr = holes.map(n => `<th style="${thS}">${n}</th>`).join('');
-  let outInHdr = '';
-  if (hasBoth) outInHdr = `<th style="${thS}color:#3ecad6;">Out</th><th style="${thS}color:#3ecad6;">In</th>`;
-
-  // Baris Par
-  let parCells = holes.map(n => `<td style="${tdS}color:#0e9aa7;">${PAR[n]}</td>`).join('');
-  let outInPar = '';
-  if (hasBoth) {
-    const pOut = front.reduce((s,n)=>s+PAR[n],0);
-    const pIn  = back.reduce((s,n)=>s+PAR[n],0);
-    outInPar = `<td style="${tdS}color:#0e9aa7;">${pOut}</td><td style="${tdS}color:#0e9aa7;">${pIn}</td>`;
-  }
-
-  // Baris tiap pemain
-  let rows = '';
-  players.forEach((p, i) => {
-    // Cari skor pemain dari array scores (by nama+gelar, fallback by urutan)
-    const sc = (scores || []).find(s => s.pemain === p.nama && (s.gelar||'') === (p.gelar||'')) || scores[i] || {};
+  // Hitung per pemain: gross, poin, out, in + ambil hcp/nett backend
+  const pdata = players.map((p, i) => {
+    const sc = (scores||[]).find(s => s.pemain === p.nama && (s.gelar||'') === (p.gelar||'')) || scores[i] || {};
     let gross = 0, poin = 0, out = 0, inS = 0;
-    const cells = holes.map(n => {
+    const hv = {};
+    holes.forEach(n => {
       const v = parseInt(sc['h'+n]) || 0;
-      if (v > 0) {
-        gross += v; poin += sf(v, PAR[n]);
-        if (n <= 9) out += v; else inS += v;
-      }
-      const d = v > 0 ? v - PAR[n] : null;
-      const col = d === null ? '#555'
-                : d <= -2 ? '#FFAB91'
-                : d === -1 ? '#69F0AE'
-                : d === 0 ? '#40C4FF'
-                : d === 1 ? '#ECEFF1' : '#FF1744';
-      return `<td style="${tdS}font-weight:700;"><span style="color:${col};">${v>0?v:'-'}</span></td>`;
-    }).join('');
-
-    let outIn = '';
-    if (hasBoth) outIn = `<td style="${tdS}color:#3ecad6;font-weight:700;">${out||'-'}</td><td style="${tdS}color:#3ecad6;font-weight:700;">${inS||'-'}</td>`;
-
-    // Ambil HCP & Nett dari hasil backend (akurat); fallback hitung System36
-    const r = resMap[(p.nama||'') + '|' + (p.gelar||'')] || {};
+      hv[n] = v;
+      if (v > 0) { gross += v; poin += sf(v, PAR[n]); if (n <= 9) out += v; else inS += v; }
+    });
+    const r = resMap[(p.nama||'')+'|'+(p.gelar||'')] || {};
     const parMax = holes.length === 18 ? 36 : 18;
     const hcp  = (r.hcp  !== undefined && r.hcp  !== null) ? r.hcp  : Math.max(0, parMax - poin);
     const grossF = (r.gross !== undefined && r.gross !== null) ? r.gross : gross;
     const nett = (r.nett !== undefined && r.nett !== null) ? r.nett : (grossF - hcp);
-
-    const bg = i % 2 ? 'background:#0b1620;' : '';
-    rows += `<tr style="${bg}">
-      <td style="${tdS}text-align:left;color:#e8f4f8;font-weight:700;white-space:nowrap;padding-left:5px;">${escHtml(p.gelar||'')} ${escHtml(p.nama)}</td>
-      ${cells}${outIn}
-      <td style="${tdS}color:#f5a623;font-weight:700;">${grossF}</td>
-      <td style="${tdS}color:#9b59b6;">${poin}</td>
-      <td style="${tdS}color:#7fa8bc;">${hcp}</td>
-      <td style="${tdS}color:#2ecc71;font-weight:700;">${nett}</td>
-    </tr>`;
+    return { nama: p.nama, gelar: p.gelar||'', hv, gross: grossF, poin, hcp, nett, out, inS };
   });
 
-  const teeLabel = teeBox === 'Biru' ? 'Biru (Hole 1–9)'
-                 : teeBox === 'Putih' ? 'Putih (Hole 10–18)'
-                 : 'BiruPutih (18 Hole)';
+  // Nama pemain untuk header kolom (dipendekkan agar muat)
+  const nCol = players.length;
+  // Jumlah baris total menentukan ukuran font (dipaksa muat tinggi layar)
+  const nBarisHole = holes.length;
+  const nBarisRingkas = (hasBoth ? 2 : 1) + 4; // Out & In (atau salah satu) + Total,Poin,HCP,Nett
+  const totalBaris = 1 /*par-header*/ + nBarisHole + nBarisRingkas;
+
+  // Warna skor
+  function colr(v, par) {
+    if (!v) return '#555';
+    const d = v - par;
+    return d <= -2 ? '#FFAB91' : d === -1 ? '#69F0AE' : d === 0 ? '#40C4FF' : d === 1 ? '#ECEFF1' : '#FF1744';
+  }
+
+  const bd = '0.5px solid #1f3347';
+
+  // Baris hole
+  let holeRows = holes.map(n => {
+    const cells = pdata.map(pd => {
+      const v = pd.hv[n];
+      return `<td style="border:${bd};text-align:center;color:${colr(v, PAR[n])};font-weight:700;">${v>0?v:'-'}</td>`;
+    }).join('');
+    return `<tr>
+      <td style="border:${bd};text-align:center;color:#e8f4f8;font-weight:700;">${n}</td>
+      <td style="border:${bd};text-align:center;color:#0e9aa7;">${PAR[n]}</td>
+      ${cells}</tr>`;
+  }).join('');
+
+  // Baris Out (kalau ada front)
+  let outRow = '';
+  if (front.length) {
+    const pOut = front.reduce((s,n)=>s+PAR[n],0);
+    const cells = pdata.map(pd => `<td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">${pd.out||'-'}</td>`).join('');
+    outRow = `<tr style="background:#0e1f2e;"><td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">Out</td><td style="border:${bd};text-align:center;color:#0e9aa7;">${pOut}</td>${cells}</tr>`;
+  }
+  // Baris In (kalau ada back)
+  let inRow = '';
+  if (back.length) {
+    const pIn = back.reduce((s,n)=>s+PAR[n],0);
+    const cells = pdata.map(pd => `<td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">${pd.inS||'-'}</td>`).join('');
+    inRow = `<tr style="background:#0e1f2e;"><td style="border:${bd};text-align:center;color:#3ecad6;font-weight:700;">In</td><td style="border:${bd};text-align:center;color:#0e9aa7;">${pIn}</td>${cells}</tr>`;
+  }
+
+  const parTot = holes.reduce((s,n)=>s+PAR[n],0);
+  const totalRow = `<tr style="background:#0d1f1a;"><td style="border:${bd};text-align:center;color:#f5a623;font-weight:700;">Total</td><td style="border:${bd};text-align:center;color:#0e9aa7;">${parTot}</td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#f5a623;font-weight:700;">${pd.gross}</td>`).join('')}</tr>`;
+  const poinRow  = `<tr><td style="border:${bd};text-align:center;color:#9b59b6;">Poin</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#9b59b6;">${pd.poin}</td>`).join('')}</tr>`;
+  const hcpRow   = `<tr><td style="border:${bd};text-align:center;color:#7fa8bc;">HCP</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#e8f4f8;">${pd.hcp}</td>`).join('')}</tr>`;
+  const nettRow  = `<tr style="background:#0d1f19;"><td style="border:${bd};text-align:center;color:#2ecc71;font-weight:700;">Nett</td><td style="border:${bd};"></td>${pdata.map(pd=>`<td style="border:${bd};text-align:center;color:#2ecc71;font-weight:700;">${pd.nett}</td>`).join('')}</tr>`;
+
+  // Header kolom pemain
+  const nameHdr = pdata.map(pd => {
+    const full = (pd.gelar?pd.gelar+' ':'') + pd.nama;
+    return `<th style="border:${bd};text-align:center;color:#e8f4f8;padding:2px 1px;line-height:1.1;word-break:break-word;">${escHtml(full)}</th>`;
+  }).join('');
+
+  const teeLabel = teeBox === 'Biru' ? 'Biru · Hole 1–9'
+                 : teeBox === 'Putih' ? 'Putih · Hole 10–18'
+                 : 'BiruPutih · 18 Hole';
 
   const html = `
-  <div style="background:#0d1821;border:1px solid #1f3347;border-radius:14px;overflow:hidden;max-width:520px;margin:0 auto;">
-    <div style="background:linear-gradient(135deg,#0d1821,#0e2233);border-bottom:2px solid #0e9aa7;padding:12px;text-align:center;">
-      <div style="font-size:16px;font-weight:700;color:#3ecad6;">⛳ Perlabian Golf Club</div>
-      <div style="font-size:11px;color:#7fa8bc;margin-top:3px;">📅 ${fmtDate(tanggal)} &nbsp;·&nbsp; 🏌️ ${teeLabel} &nbsp;·&nbsp; 👥 ${players.length} pemain</div>
+    <div style="flex:0 0 auto;background:linear-gradient(135deg,#0d1821,#0e2233);border-bottom:2px solid #0e9aa7;padding:8px 10px;text-align:center;">
+      <div style="font-size:15px;font-weight:700;color:#3ecad6;">⛳ Perlabian Golf Club</div>
+      <div style="font-size:10px;color:#7fa8bc;margin-top:2px;">📅 ${fmtDate(tanggal)} &nbsp;·&nbsp; 🏌️ ${teeLabel} &nbsp;·&nbsp; 👥 ${nCol} pemain</div>
     </div>
-    <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;">
+    <div style="flex:1 1 auto;min-height:0;padding:4px;">
+      <table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed;font-size:clamp(8px,2.6vw,13px);">
         <thead>
           <tr style="background:#12202e;">
-            <th style="${thS}text-align:left;padding-left:5px;">Pemain</th>
-            ${holeHdr}${outInHdr}
-            <th style="${thS}color:#f5a623;">Tot</th>
-            <th style="${thS}color:#9b59b6;">Poin</th>
-            <th style="${thS}color:#7fa8bc;">HCP</th>
-            <th style="${thS}color:#2ecc71;">Nett</th>
-          </tr>
-          <tr style="background:#0f1e2c;">
-            <td style="${tdS}text-align:left;color:#0e9aa7;padding-left:5px;">Par</td>
-            ${parCells}${outInPar}
-            <td style="${tdS}color:#0e9aa7;">${parTot}</td>
-            <td style="${tdS}">-</td><td style="${tdS}">-</td><td style="${tdS}">-</td>
+            <th style="border:${bd};color:#7fa8bc;width:13%;">Hole</th>
+            <th style="border:${bd};color:#0e9aa7;width:11%;">Par</th>
+            ${nameHdr}
           </tr>
         </thead>
-        <tbody>${rows}</tbody>
+        <tbody>
+          ${holeRows}
+          ${outRow}
+          ${inRow}
+          ${totalRow}
+          ${poinRow}
+          ${hcpRow}
+          ${nettRow}
+        </tbody>
       </table>
     </div>
-    <div style="padding:7px 12px;font-size:9px;color:#7fa8bc;text-align:center;border-top:0.5px solid #1f3347;">
+    <div style="flex:0 0 auto;padding:4px 10px;font-size:9px;color:#7fa8bc;text-align:center;border-top:0.5px solid #1f3347;">
       PGC Scorecards 2026 · Nett = Gross − Handicap
-    </div>
-  </div>
-  <div style="text-align:center;font-size:11px;color:#7fa8bc;margin-top:12px;">📸 Screenshot layar ini untuk dibagikan</div>`;
+    </div>`;
 
   document.getElementById('shareContent').innerHTML = html;
   document.getElementById('shareOverlay').style.display = 'block';
-  window.scrollTo(0, 0);
 }
 
 function closeShareView() {
